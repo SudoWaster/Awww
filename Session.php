@@ -5,9 +5,9 @@ class Session {
   public static $sessionExpiration  = 5 * 60;   // 5 minutes expiration
   public static $sessionCookie      = 'usid';
   
-  private static $sessionID;
-  
-  private $hashSaltPhrase = 'gamedev';
+  private static $hashSaltPhrase  = 'AwW54l7';  // DO NOT CHANGE UNLESS YOU WANT TO
+  private static $hashSaltMod     = 7;          // RESET PASSWORDS FOR EVERYONE
+
   
   /**
    * Get singleton instance
@@ -92,11 +92,21 @@ class Session {
   }
   
   /**
-   * Return salt-hashed string
-   *
-   * @return 
+   * @return salt-hashed string
    */
-  public static salthash($string) {
+  public static salthash($string, $requestUser) {
     
+    $startPos = strlen($string) / 2 + strlen(self::$hashSaltMod) - 1;
+    
+    if($startPos >= strlen($string) % self::$hashSaltMod) {
+      $startPos = - (strlen($string) % self::$hashSaltMod);
+    }
+    
+    $newstr = substr_replace($string, self::$hashSaltPhrase, $startPos, 0);
+    
+    $startPos = (strlen($string) * strlen($requestUser)) % strlen($newstr);
+    $newstr = substr_replace($newstr, $requestUser, $startPos, 0);
+    
+    return hash('sha256', $newstr);
   }
 }
