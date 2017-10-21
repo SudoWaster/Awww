@@ -148,6 +148,22 @@ final class UserData {
     return $createUserQuery->fetch()['user_id'];
   }
   
+  
+  /**
+   * Update user info
+   *
+   */
+  public function updateUser($id, $mail, $password, $name) {
+    $updateQuery = self::$connection->prepare('UPDATE ' . self::$prefix . 'users SET mail = :mail, password = :pass, name = :name WHERE user_id = :id');
+    $updateQuery->bindParam(':mail', $mail, PDO::PARAM_STR, 64);
+    $updateQuery->bindParam(':pass', self::saltHash($password, $mail), PDO::PARAM_STR, 64);
+    $updateQuery->bindParam(':name', $name, PDO::PARAM_STR, 64);
+    $updateQuery->bindParam(':id', $id, PDO::PARAM_INT);
+    
+    $updateQuery->execute();
+  }
+  
+  
   /**
    * Remove user
    *
@@ -164,7 +180,60 @@ final class UserData {
     $removeQuery->bindParam(':uid', $id, PDO::PARAM_INT);
     $removeQuery->bindParam(':mail', $mail, PDO::PARAM_STR, 64);
     $removeQuery->execute();
+    
+    // user badges
+    $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'user_badges WHERE user_id = :uid');
+    $removeQuery->bindParam(':uid', $id, PDO::PARAM_INT);
+    $removeQuery->execute();
   }
+  
+  
+  /**
+   * @return an array of all users
+   *
+   */
+  public function getAllUsers() {
+    $selectQuery = self::$connection->prepare('SELECT user_id, mail, name, wtype FROM ' . self::$prefix . 'users');
+    $selectQuery->execute();
+    
+    $result = array();
+    
+    foreach($selectQuery->fetchAll() as $row) {
+      $user = new User($row['user_id'], $row['mail'], $row['wtype'], $row['name']);
+      
+      array_push($result, $user);
+    }
+    
+    return $result;
+  }
+  
+  
+  /**
+   * @return an array of groups the user belongs to
+   */
+  public function getUserGroups($uid) {
+    $selectQuery = self::$connection->prepare('SELECT group_id, group_name FROM ' . self::$prefix . 'groups RIGHT JOIN ' . self::$prefix . 'group_assign ON ' . self::$prefix . 'groups.group_id = ' . self::$prefix . 'group_assign.group_id WHERE ' . self::$prefix 'group_assign.user_id = :id');
+    $selectQuery->bindParam(':id', $uid, PDO::PARAM_INT);
+    
+    $selectQuery->execute();
+    
+    return $selectQuery->fetchAll();
+  }
+  
+  
+  /**
+   * @return an array of user achievements
+   *
+   */
+  public function getUserAchievements($uid) {
+    $selectQuery = self::$connection->prepare('SELECT achievement_id, title, description FROM ' . self::$prefix . 'achievements RIGHT JOIN ' . self::$prefix . 'user_badges ON ' . self::$prefix . 'achievements.achievement_id = ' . self::$prefix . 'user_badges.achievement_id WHERE ' . self::$prefix . 'user_id = :uid');
+    $selectQuery->bindParam(':uid', $uid, PDO::PARAM_INT);
+    
+    $selectQuery->execute();
+    
+    return $selectQuery->fetchAll();
+  }
+  
   
   /**
    * Adds user (specified by mail) to the group of a specified id
@@ -192,6 +261,7 @@ final class UserData {
     return true;
   }
   
+  
   /**
    * Removes user from group
    */
@@ -201,6 +271,7 @@ final class UserData {
     $removeQuery->bindParam(':gid', $group, PDO::PARAM_INT);
     $removeQuery->execute();
   }
+  
   
   /**
    * Adds group
@@ -223,6 +294,7 @@ final class UserData {
     return $insertQuery->fetch()['group_id'];
   }
   
+  
   /**
    * Remove group
    *
@@ -239,6 +311,19 @@ final class UserData {
     $removeQuery->execute();
   }
   
+  
+  /**
+   * @return all active groups
+   *
+   */
+  public function getAllGroups() {
+    $selectQuery = self::$connection->prepare('SELECT group_name FROM ' . self::$prefix . 'groups');
+    $selectQuery->execute();
+    
+    return $selectQuery->fetchAll();
+  }
+  
+  
   /**
    * @return an array of Users in group
    *
@@ -247,6 +332,7 @@ final class UserData {
     
     $privilegeCondition = self::$prefix . 'users.wtype > ' . User::$USER_TYPE['STUDENT'];
     
+    // you may not like SQL, but it would be a lot harder using any other tool
     $selectQuery = self::$connection->prepare('SELECT user_id, mail, name, wtype FROM ' . self::$prefix . 'users RIGHT JOIN ' . self::$prefix . 'group_assign ON ' . self::$prefix . 'group_assign.user_id = ' . self::$prefix . 'users.user_id WHERE ' . self::$prefix . 'group_assign.group_id = :gid ' . $privileged ? 'AND ' . $privilegeCondition : '' );
     
     $selectQuery->bindParam(':gid', $id, PDO::PARAM_INT);
@@ -261,5 +347,83 @@ final class UserData {
     }
     
     return $result;
+  }
+  
+  
+  /**
+   * Adds achivement
+   *
+   * @returns achievement id or false if exists
+   */
+  public function addAchievement($title, $description) {
+    $checkQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'achievements WHERE title = :title');
+    $checkQuery->bindParam(':title', $title, PDO:PARAM_STR, 64);
+    $checkQuery->execute();
+    
+    if($checkQuery->rowCount() > 0) {
+      return false;
+    }
+    
+    $insertQuery = self::$connection->prepare('INSERT INTO ' . self::$prefix . 'achievements (title, description) OUTPUT INSERTED.achievement_id VALUES(:title, :description)');
+    $insertQuery->bindParam(':title', $title, PDO::PARAM_STR, 64);
+    $insertQuery->bindParam(':description', $description, PDO::PARAM_STR, 512);
+    $insertQuery->execute();
+    
+    return $insertQuery->fetch()['achievement_id'];
+  }
+  
+  
+  /**
+   * Updates achievement info
+   *
+   */
+  public function updateAchievement($id, $title, $description) {
+    $updateQuery = self::$connection->prepare('UPDATE ' . self::$prefix . 'achievements SET title = :title, description = :description WHERE achievement_id = :aid');
+    $updateQuery->bindParam(':title', $title, PDO::PARAM_STR, 64);
+    $updateQuery->bindParam(':description', $description, PDO::PARAM_STR, 512);
+    $updateQuery->bindParam(':aid', $id, PDO::PARAM_INT);
+    $updateQuery->execute();
+  }
+  
+  
+  /**
+   * Removes achievement
+   *
+   */
+  public function removeAchievement($id) {
+    // achievements
+    $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'achievements WHERE achievement_id = :aid');
+    $removeQuery->bindParam(':aid', $id, PDO::PARAM_INT);
+    $removeQuery->execute();
+    
+    // user badges
+    $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'user_badges WHERE achievement_id = :aid');
+    $removeQuery->bindParam(':aid', $id, PDO::PARAM_INT);
+    $removeQuery->execute();
+  }
+  
+  
+  /**
+   * @return an achievement 
+   *
+   */
+  public function getAchievement($id) {
+    $selectQuery = self::$connection->prepare('SELECT title, description FROM ' . self::$prefix . 'achievements WHERE achievement_id = :aid');
+    $selectQuery->bindParam(':aid', $id, PDO::PARAM_ID);
+    $selectQuery->execute();
+    
+    return $selectQuery->fetch();
+  }
+  
+  
+  /**
+   * @return an array of achievements
+   *
+   */
+  public function getAllAchievements() {
+    $selectQuery = self::$connection->prepare('SELECT achievement_id, title, description FROM ' . self::$prefix . 'achievements');
+    $selectQuery->execute();
+    
+    return $selectQuery->fetchAll();
   }
 }
