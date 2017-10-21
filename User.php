@@ -2,23 +2,23 @@
 class User {
   
   public static $USER_TYPES = array(
-    0 => 'UNAUTHORISED',
-    1 => 'STUDENT',
-    2 => 'INSTRUCTOR',
-    3 => 'ADMIN'
+    'UNAUTHORISED'  => 0,
+    'STUDENT'       => 1,
+    'INSTRUCTOR'    => 2,
+    'ADMIN'         => 3
   );
+  
+  public static $PRIVILEGED_GROUP = 'PRIVILEGED';
   
   private $id;
   private $mail;
   private $type;
-  private $group;
   private $name;
   
-  public function __construct($id, $mail, $type, $group, $name) {
+  public function __construct($id, $mail, $type, $name) {
     $this->id    = $id;
     $this->mail  = $mail;
     $this->type  = $type;
-    $this->group = $group;
     $this->name  = $name;
   }
   
@@ -30,23 +30,19 @@ class User {
     return $this->id;
   }
   
-  public function getGroup() {
-    return $this->group;
-  }
-  
   public function getName() {
     return $this->name;
   }
   
   public function canLogin() {
-    return array_search($this->type, self::$USER_TYPES) > 0;
+    return $this->type > self::$USER_TYPES['UNAUTHORISED'];
   }
   
   public function isPrivileged() {
-    return array_search($this->type, self::$USER_TYPES) > 1;
+    return $this->type > self::$USER_TYPES['STUDENT'];
   }
   
   public function isAdmin() {
-    return array_search($this->type, self::$USER_TYPES) >= 3;
+    return $this->type >= self::$USER_TYPES['ADMIN'];
   }
 }

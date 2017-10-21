@@ -88,13 +88,12 @@ final class Session {
    * Binds logged user
    */
   public static function bindUser($user) {
-    if(isset(self::$user) && !self::$user->canLogin()) {
+    if(!$user->canLogin()) {
       self::destroySession();
       return;
     }
     
     $_SESSION['CURRENT_USER'] = serialize($user);
-    
     self::$user = $user;
   }
        

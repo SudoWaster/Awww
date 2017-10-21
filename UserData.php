@@ -81,7 +81,7 @@ final class UserData {
    * @return signed in user
    */
   public function getSignedIn($mail, $pass) {
-    $loginQuery = self::$connection->prepare('SELECT user_id FROM awww_users WHERE password=:pass');
+    $loginQuery = self::$connection->prepare('SELECT mail FROM awww_users WHERE password=:pass');
     
     $password = self::saltHash($pass, $mail);
     
@@ -93,16 +93,16 @@ final class UserData {
     }
     
     $result = $loginQuery->fetch();
-    return $this->getUser($result['user_id']);
+    return $this->getUser($result['mail']);
   }
   
   /**
    * @return user from database
    */
-  public function getUser($id) {
-    $userQuery = self::$connection->prepare('SELECT mail, wtype, wgroup, name FROM ' . self::$prefix . 'users WHERE user_id=:id');
+  public function getUser($mail) {
+    $userQuery = self::$connection->prepare('SELECT user_id, mail, wtype, name FROM ' . self::$prefix . 'users WHERE mail=:login');
     
-    $userQuery->bindParam(':id', $id, PDO::PARAM_INT);
+    $userQuery->bindParam(':login', $mail, PDO::PARAM_INT);
     $userQuery->execute();
     
     if($userQuery->rowCount() <= 0) {
@@ -110,8 +110,9 @@ final class UserData {
     }
     
     $result = $userQuery->fetch();
-    return new User($id, $result['mail'], $result['wtype'], $result['wgroup'], $result['name']);
+    return new User($result['user_id'], $result['mail'], $result['wtype'], $result['name']);
   }
+  
   
   /**
    * @return a null user with no access
@@ -120,8 +121,28 @@ final class UserData {
     return new User(null, null, 0, null, null);
   }
   
-  public function register() {
+  
+  /**
+   * Creates user
+   *
+   * @return false on error
+   */
+  public function createUser($mail, $password, $name, $type) {
     
+    if($this->getUser($mail)->canLogin()) {
+      return false;
+    }
+    
+    $createUserQuery = self::$connection->prepare('INSERT INTO ' . self::$prefix . 'users (mail, password, name, wtype) VALUES(:mail, :pass, :name, :type)');
+    
+    $createUserQuery->bindParam(':mail', $mail, PDO::PARAM_STR, 64);
+    $createUserQuery->bindParam(':pass', self::saltHash($password, $mail), PDO::PARAM_STR, 64);
+    $createUserQuery->bindParam(':name', $name, PDO::PARAM_STR, 64);
+    $createUserQuery->bindParam(':type', $type, PDO::PARAM_INT);
+    
+    $createUserQuery->execute();
+    
+    return true;
   }
   
 }
