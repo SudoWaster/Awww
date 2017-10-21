@@ -212,7 +212,7 @@ final class UserData {
    * @return an array of groups the user belongs to
    */
   public function getUserGroups($uid) {
-    $selectQuery = self::$connection->prepare('SELECT group_id, group_name FROM ' . self::$prefix . 'groups RIGHT JOIN ' . self::$prefix . 'group_assign ON ' . self::$prefix . 'groups.group_id = ' . self::$prefix . 'group_assign.group_id WHERE ' . self::$prefix . 'group_assign.user_id = :id');
+    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'groups RIGHT JOIN ' . self::$prefix . 'group_assign ON ' . self::$prefix . 'groups.group_id = ' . self::$prefix . 'group_assign.group_id WHERE ' . self::$prefix . 'group_assign.user_id = :id');
     $selectQuery->bindParam(':id', $uid, PDO::PARAM_INT);
     
     $selectQuery->execute();
@@ -292,7 +292,7 @@ final class UserData {
    *
    * @return group id or false if already exists
    */
-  public function addGroup($name, $vacancies) {
+  public function addGroup($name, $description, $vacancies) {
     $checkQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'groups WHERE group_name=:name');
     $checkQuery->bindParam(':name', $name, PDO::PARAM_STR, 64);
     $checkQuery->execute();
@@ -301,8 +301,9 @@ final class UserData {
       return false;
     }
     
-    $insertQuery = self::$connection->prepare('INSERT INTO ' . self::$prefix . 'groups (group_name, vacancies) OUTPUT INSERTED.group_id VALUES(:name, :vacancies)');
+    $insertQuery = self::$connection->prepare('INSERT INTO ' . self::$prefix . 'groups (group_name, group_desc, vacancies) OUTPUT INSERTED.group_id VALUES(:name, :desc :vacancies)');
     $insertQuery->bindParam(':name', $name, PDO::PARAM_STR, 64);
+    $insertQuery->bindParam(':desc', $description, PDO::PARAM_STR, 512);
     $insertQuery->bindParam(':vacancies', $vacancies, PDO::PARAM_INT);
     $insertQuery->execute();
     
@@ -311,11 +312,12 @@ final class UserData {
   
   
   /**
-   * Update name and vacancies
+   * Update info and vacancies
    */
-  public function updateGroup($id, $name, $vacancies) {
-    $updateQuery = self::$connection->prepare('UPDATE ' . self::$prefix . 'groups SET group_name = :name, vacancies = :vacancies WHERE group_id = :gid');
+  public function updateGroup($id, $name, $description, $vacancies) {
+    $updateQuery = self::$connection->prepare('UPDATE ' . self::$prefix . 'groups SET group_name = :name, group_desc = :desc, vacancies = :vacancies WHERE group_id = :gid');
     $updateQuery->bindParam(':name', $name, PDO::PARAM_STR, 32);
+    $updateQuery->bindParam(':desc', $description, PDO::PARAM_STR, 512);
     $updateQuery->bindParam(':vacancies', $vacancies, PDO::PARAM_INT);
     $updateQuery->bindParam(':gid', $id, PDO::PARAM_INT);
     $updateQuery->execute();
@@ -344,7 +346,7 @@ final class UserData {
    *
    */
   public function getAllGroups() {
-    $selectQuery = self::$connection->prepare('SELECT group_name FROM ' . self::$prefix . 'groups');
+    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'groups');
     $selectQuery->execute();
     
     return $selectQuery->fetchAll();
