@@ -55,7 +55,7 @@ final class UserData {
   /**
    * @return salt-hashed string
    */
-  public static saltHash($string, $requestUser) {
+  public static function saltHash($string, $requestUser) {
     
     $startPos = strlen($string) / 2 + strlen(self::$hashSaltMod) - 1;
     

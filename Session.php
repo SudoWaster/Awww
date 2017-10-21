@@ -26,34 +26,36 @@ final class Session {
    * Private constructor for singleton
    *
    */
-  private function __construct() {
-    startSession();
-  }
+  private function __construct() {}
   
   /**
    * Checks validity of session and optionally creates one
    *
    */
-  public static startSession() {
+  public static function startSession() {
     session_start();
     
-    if(!self::isSessionValid() || (isset($this->$user) && !$this->$user->isLogged()) {
+    if(!self::isSessionValid() || 
+       (isset($this->$user) && !$this->$user->isLogged())) {
       self::destroySession();
     }
     
     session_id(self::getSession());
     
-    updateSession();
+    self::updateSession();
   }
   
   /**
    * @return current session validity
    */
-  private static isSessionValid() {
+  private static function isSessionValid() {
     $safeSID = isset($_SESSION['SAFE_SID']);
-    $expired = $_SESSION['ACTIVITY'] + self::$sessionExpiration > time();
-    $validIP = $_SERVER['REMOTE_ADDR'] === $_SESSION['PREV_REMOTE_ADDR'];
-    $validUA = $_SERVER['HTTP_USER_AGENT'] === $_SESSION['PREV_USER_AGENT'];
+    $expired = isset($_SESSION['ACTIVITY']) 
+      && ($_SESSION['ACTIVITY'] + self::$sessionExpiration > time());
+    $validIP = isset($_SESSION['PREV_REMOTE_ADDR']) 
+      && $_SERVER['REMOTE_ADDR'] === $_SESSION['PREV_REMOTE_ADDR'];
+    $validUA = isset($_SESSION['PREV_USER_AGENT'])
+      && $_SERVER['HTTP_USER_AGENT'] === $_SESSION['PREV_USER_AGENT'];
     
     return $safeSID && !$expired && $validIP && $validUA;
   }
@@ -61,8 +63,8 @@ final class Session {
   /**
    * Save new session info
    */
-  private static updateSession() {
-    $_SESSION['ACTIVITY'] = getTimestamp();
+  private static function updateSession() {
+    $_SESSION['ACTIVITY'] = time();
     $_SESSION['PREV_REMOTE_ADDR'] = $_SERVER['REMOTE_ADDR'];
     $_SESSION['PREV_USER_AGENT'] = $_SERVER['HTTP_USER_AGENT'];
     
@@ -74,11 +76,13 @@ final class Session {
    *
    * @returns session id
    */
-  private static getSession() {
+  private static function getSession() {
     
     if(!isset($_COOKIE[self::$sessionCookie])) {
       self::destroySession();
-      setCookie(self::$sessionCookie, session_id(), time() + self::$cookieExpiration);
+      setCookie(self::$sessionCookie, session_id(), time() + self::$sessionExpiration);
+      
+      return session_id();
     }
     
     return $_COOKIE[self::$sessionCookie];
@@ -88,7 +92,7 @@ final class Session {
    * Properly destroy session
    *
    */
-  public static destroySession() {
+  public static function destroySession() {
     session_destroy();
     setcookie(self::$sessionCookie, "", time() - 3600);
     $user = null;
@@ -97,9 +101,8 @@ final class Session {
   
   /**
    * Binds logged user
-   *
    */
-  public bindUser($user) {
+  public function bindUser($user) {
     if(!$user->isLogged()) {
       destroySession();
       return;
@@ -110,18 +113,16 @@ final class Session {
        
   /**
    * @return logged status
-   *
    */
-  public isLogged() {
-    return ($user != null && $user->isLogged());
+  public function isLogged() {
+    return (isset($user) && $user != null && $user->isLogged());
   }
        
        
   /**
    * @return logged user
-   *
    */
-  public getUser() {
+  public function getUser() {
     return $user;
   }
 }
