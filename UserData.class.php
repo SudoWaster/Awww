@@ -238,15 +238,29 @@ final class UserData {
   /**
    * Adds user (specified by mail) to the group of a specified id
    *
-   * @return user id or false if already exists in group
+   * @return user id or false if already exists in group or group is full
    */
-  public function addToGroup($mail, $group) {
+  public function addToGroup($mail, $groupID, $updateVacancy = true) {
+    
+    if($updateVacancy) {
+      $checkQuery = self::$connection->prepare('SELECT vacancies FROM ' . self::$prefix . 'groups WHERE group_id = :gid');
+      $checkQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
+      $checkQuery->execute();
+      
+      if($checkQuery->fetch()['vacancies'] <= 0) {
+        return false;
+      }
+      
+      $updateQuery = self::$connection->prepare('UPDATE ' . self::$prefix . 'groups SET vacancies = vacancies - 1 WHERE group_id = :gid');
+      $updateQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
+      $updateQuery->execute();
+    }
     
     $user = $this->getUser($mail);
     
     $checkQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'group_assign WHERE user_id=:uid AND group_id=:gid');
     $checkQuery->bindParam(':uid', $user->getID(), PDO::PARAM_INT);
-    $checkQuery->bindParam(':gid', $group, PDO::PARAM_INT);
+    $checkQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
     $checkQuery->execute();
     
     if($checkQuery->rowCount() > 0) {
@@ -255,7 +269,7 @@ final class UserData {
     
     $insertQuery = self::$connection->prepare('INSERT INTO ' . self::$prefix . 'group_assign (user_id, group_id) VALUES(:uid, :gid)');
     $insertQuery->bindParam(':uid', $user->getID(), PDO::PARAM_INT);
-    $insertQuery->bindParam(':gid', $group, PDO::PARAM_INT);
+    $insertQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
     $insertQuery->execute();
     
     return true;
@@ -278,7 +292,7 @@ final class UserData {
    *
    * @return group id or false if already exists
    */
-  public function addGroup($name) {
+  public function addGroup($name, $vacancies) {
     $checkQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'groups WHERE group_name=:name');
     $checkQuery->bindParam(':name', $name, PDO::PARAM_STR, 64);
     $checkQuery->execute();
@@ -287,11 +301,24 @@ final class UserData {
       return false;
     }
     
-    $insertQuery = self::$connection->prepare('INSERT INTO ' . self::$prefix . 'groups (group_name) OUTPUT INSERTED.group_id VALUES(:name)');
+    $insertQuery = self::$connection->prepare('INSERT INTO ' . self::$prefix . 'groups (group_name, vacancies) OUTPUT INSERTED.group_id VALUES(:name, :vacancies)');
     $insertQuery->bindParam(':name', $name, PDO::PARAM_STR, 64);
+    $insertQuery->bindParam(':vacancies', $vacancies, PDO::PARAM_INT);
     $insertQuery->execute();
     
     return $insertQuery->fetch()['group_id'];
+  }
+  
+  
+  /**
+   * Update name and vacancies
+   */
+  public function updateGroup($id, $name, $vacancies) {
+    $updateQuery = self::$connection->prepare('UPDATE ' . self::$prefix . 'groups SET group_name = :name, vacancies = :vacancies WHERE group_id = :gid');
+    $updateQuery->bindParam(':name', $name, PDO::PARAM_STR, 32);
+    $updateQuery->bindParam(':vacancies', $vacancies, PDO::PARAM_INT);
+    $updateQuery->bindParam(':gid', $id, PDO::PARAM_INT);
+    $updateQuery->execute();
   }
   
   
