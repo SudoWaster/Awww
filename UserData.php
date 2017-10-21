@@ -13,22 +13,24 @@ final class UserData {
   
   private static $connection;
   
-  private $server   = '';
-  private $database = '';
-  private $user     = '';
-  private $pass     = '';
+  // DATABASE LOGIN INFO
+  private static $server   = 'localhost';
+  private static $database = 'awww_data';
+  private static $user     = 'awww';
+  private static $pass     = 'test';
+  private static $prefix   = 'awww_';
   
   
   /**
    * Get singleton instance
    *
-   * @return GameDevData
+   * @return UserData
    */
   public static function Instance() {
     static $instance = null;
     
     if ($instance === null) {
-      $instance = new GameDevData();
+      $instance = new UserData();
     }
     
     return $instance;
@@ -39,7 +41,7 @@ final class UserData {
    *
    */
   private function __construct() {
-    connect();
+    self::connect();
   }
   
   /**
@@ -47,7 +49,10 @@ final class UserData {
    *
    */
   private static function connect() {
-    self::$connection = new PDO('mysql:host=$this->$server;dbname=$this->$database', $user, $pass);
+    self::$connection = new PDO(
+      'mysql:host=' . self::$server . 
+      ';dbname=' . self::$database, 
+      self::$user, self::$pass);
     
     self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
   }
@@ -87,25 +92,25 @@ final class UserData {
       return $this->getDefaultUser();
     }
     
-    $result = $userQuery->fetch();
-    return getUser($result['user_id']);
+    $result = $loginQuery->fetch();
+    return $this->getUser($result['user_id']);
   }
   
   /**
    * @return user from database
    */
   public function getUser($id) {
-    $userQuery = self::$connection->prepare('SELECT mail, type, group, name FROM awww_users WHERE user_id=:id');
+    $userQuery = self::$connection->prepare('SELECT mail, wtype, wgroup, name FROM ' . self::$prefix . 'users WHERE user_id=:id');
     
     $userQuery->bindParam(':id', $id, PDO::PARAM_INT);
-    $userQuert->execute();
+    $userQuery->execute();
     
     if($userQuery->rowCount() <= 0) {
       return $this->getDefaultUser();
     }
     
     $result = $userQuery->fetch();
-    return new User($id, $result['mail'], $result['type'], $result['group'], $result['name']);
+    return new User($id, $result['mail'], $result['wtype'], $result['wgroup'], $result['name']);
   }
   
   /**
@@ -113,6 +118,10 @@ final class UserData {
    */
   public function getDefaultUser() {
     return new User(null, null, 0, null, null);
+  }
+  
+  public function register() {
+    
   }
   
 }
