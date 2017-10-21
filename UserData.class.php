@@ -212,7 +212,7 @@ final class UserData {
    * @return an array of groups the user belongs to
    */
   public function getUserGroups($uid) {
-    $selectQuery = self::$connection->prepare('SELECT group_id, group_name FROM ' . self::$prefix . 'groups RIGHT JOIN ' . self::$prefix . 'group_assign ON ' . self::$prefix . 'groups.group_id = ' . self::$prefix . 'group_assign.group_id WHERE ' . self::$prefix 'group_assign.user_id = :id');
+    $selectQuery = self::$connection->prepare('SELECT group_id, group_name FROM ' . self::$prefix . 'groups RIGHT JOIN ' . self::$prefix . 'group_assign ON ' . self::$prefix . 'groups.group_id = ' . self::$prefix . 'group_assign.group_id WHERE ' . self::$prefix . 'group_assign.user_id = :id');
     $selectQuery->bindParam(':id', $uid, PDO::PARAM_INT);
     
     $selectQuery->execute();
@@ -357,7 +357,7 @@ final class UserData {
    */
   public function addAchievement($title, $description) {
     $checkQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'achievements WHERE title = :title');
-    $checkQuery->bindParam(':title', $title, PDO:PARAM_STR, 64);
+    $checkQuery->bindParam(':title', $title, PDO::PARAM_STR, 64);
     $checkQuery->execute();
     
     if($checkQuery->rowCount() > 0) {
