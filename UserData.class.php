@@ -366,6 +366,11 @@ final class UserData {
     $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'group_assign WHERE group_id=:gid');
     $removeQuery->binParam(':gid', $id, PDO::PARAM_INT);
     $removeQuery->execute();
+    
+    // achievements
+    $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'achievements WHERE group_id=:gid');
+    $removeQuery->binParam(':gid', $id, PDO::PARAM_INT);
+    $removeQuery->execute();
   }
   
   
