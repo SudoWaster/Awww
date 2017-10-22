@@ -225,9 +225,12 @@ final class UserData {
    * @return an array of user achievements
    *
    */
-  public function getUserAchievements($uid) {
-    $selectQuery = self::$connection->prepare('SELECT achievement_id, title, description FROM ' . self::$prefix . 'achievements RIGHT JOIN ' . self::$prefix . 'user_badges ON ' . self::$prefix . 'achievements.achievement_id = ' . self::$prefix . 'user_badges.achievement_id WHERE ' . self::$prefix . 'user_id = :uid');
+  public function getUserAchievements($uid, $groupID = false) {
+    $groupCondition = ' AND ' . self::$prefix . 'achievements.group_id = :gid';
+    
+    $selectQuery = self::$connection->prepare('SELECT achievement_id, title, description FROM ' . self::$prefix . 'achievements RIGHT JOIN ' . self::$prefix . 'user_badges ON ' . self::$prefix . 'achievements.achievement_id = ' . self::$prefix . 'user_badges.achievement_id WHERE ' . self::$prefix . 'user_id = :uid ' . (!!$groupID ? $groupCondition : ''));
     $selectQuery->bindParam(':uid', $uid, PDO::PARAM_INT);
+    $selectQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
     
     $selectQuery->execute();
     
@@ -236,13 +239,38 @@ final class UserData {
   
   
   /**
+   * @return user progress in group
+   */
+  public function getUserProgress($uid, $groupID) {
+    $result = 0;
+    
+    $selectQuery = self::$connection->prepare('SELECT COUNT(' . self::$prefix . 'achievements.achievement_id) FROM ' . self::$prefix . 'achievements RIGHT JOIN ' . self::$prefix . 'user_bagdes ON ' . self::$prefix . 'achievements.achievement_id = ' . self::$prefix . 'user_badges.achievement_id WHERE ' . self::$prefix . 'user_badges.user_id = :uid AND ' . self::$prefix . 'achievements.group_id = :gid');
+    $selectQuery->bindParam(':uid', $uid, PDO::PARAM_INT);
+    $selectQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
+    $selectQuery->execute();
+    
+    $result = $selectQuery->fetch()['COUNT(' . self::$prefix . 'achievements.achievement_id)'];
+    
+    $selectQuery = self::$connection->prepare('SELECT COUNT(achievement_id) FROM ' . self::$prefix . 'achievements WHERE group_id = :gid');
+    $selectQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
+    $selectQuery->execute();
+    $all = $selectQuery->fetch()['COUNT(achievement_id)'];
+    
+    if($all == 0) {
+      return 0;
+    }
+    
+    return $result / $all;
+  }
+  
+  /**
    * Adds user (specified by mail) to the group of a specified id
    *
    * @return user id or false if already exists in group or group is full
    */
   public function addToGroup($mail, $groupID, $updateVacancy = true) {
     
-    if($updateVacancy) {
+    if(!!$updateVacancy) {
       $checkQuery = self::$connection->prepare('SELECT vacancies FROM ' . self::$prefix . 'groups WHERE group_id = :gid');
       $checkQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
       $checkQuery->execute();
@@ -384,7 +412,7 @@ final class UserData {
    *
    * @returns achievement id or false if exists
    */
-  public function addAchievement($title, $description) {
+  public function addAchievement($title, $description, $groupID) {
     $checkQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'achievements WHERE title = :title');
     $checkQuery->bindParam(':title', $title, PDO::PARAM_STR, 64);
     $checkQuery->execute();
@@ -393,9 +421,10 @@ final class UserData {
       return false;
     }
     
-    $insertQuery = self::$connection->prepare('INSERT INTO ' . self::$prefix . 'achievements (title, description) OUTPUT INSERTED.achievement_id VALUES(:title, :description)');
+    $insertQuery = self::$connection->prepare('INSERT INTO ' . self::$prefix . 'achievements (title, description, group_id) OUTPUT INSERTED.achievement_id VALUES(:title, :description, :gid)');
     $insertQuery->bindParam(':title', $title, PDO::PARAM_STR, 64);
     $insertQuery->bindParam(':description', $description, PDO::PARAM_STR, 512);
+    $insertQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
     $insertQuery->execute();
     
     return $insertQuery->fetch()['achievement_id'];
@@ -442,6 +471,18 @@ final class UserData {
     $selectQuery->execute();
     
     return $selectQuery->fetch();
+  }
+  
+  
+  /**
+   * @return an array of group achievements
+   */
+  public function getGroupAchievements($group_id) {
+    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'achievements WHERE group_id = :gid');
+    $selectQuery->bindParam(':gid', $group_id, PDO::PARAM_INT);
+    $selectQuery->execute();
+    
+    return $selectQuery->fetchAll();
   }
   
   
