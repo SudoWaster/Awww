@@ -84,7 +84,7 @@ final class UserData {
    * @return signed in user
    */
   public function getSignedIn($mail, $pass) {
-    $loginQuery = self::$connection->prepare('SELECT mail FROM awww_users WHERE password=:pass');
+    $loginQuery = self::$connection->prepare('SELECT mail FROM ' . self::$prefix . 'users WHERE password=:pass');
     
     $password = self::saltHash($pass, $mail);
     
