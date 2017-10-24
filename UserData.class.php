@@ -185,6 +185,11 @@ final class UserData {
     $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'user_badges WHERE user_id = :uid');
     $removeQuery->bindParam(':uid', $id, PDO::PARAM_INT);
     $removeQuery->execute();
+    
+    // presence
+    $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'presence WHERE user_id = :uid');
+    $removeQuery->bindParam(':uid', $id, PDO::PARAM_INT);
+    $removeQuery->execute();
   }
   
   
@@ -388,6 +393,11 @@ final class UserData {
     $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'group_posts WHERE group_id=:gid');
     $removeQuery->binParam(':gid', $id, PDO::PARAM_INT);
     $removeQuery->execute();
+    
+    // presence
+    $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'presence WHERE group_id=:gid');
+    $removeQuery->binParam(':gid', $id, PDO::PARAM_INT);
+    $removeQuery->execute();
   }
   
   
@@ -565,6 +575,33 @@ final class UserData {
     return true;
   }
   
+  
+  /**
+   * @return particular post
+   *
+   */
+  public function getPost($postID) {
+    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'group_posts WHERE post_id = :pid');
+    $selectQuery->bindParam(':pid', $postID, PDO::PARAM_INT);
+    $selectQuery->execute();
+    
+    return $selectQuery->fetch();
+  }
+  
+  
+  /**
+   * @return posts in group
+   *
+   */
+  public function getPosts($groupID) {
+    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'group_posts WHERE group_id = :gid ORDER BY date DESC');
+    $selectQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
+    $selectQuery->execute();
+    
+    return $selectQuery->fetchAll();
+  }
+  
+  
   /**
    * Remove post
    *
@@ -575,4 +612,54 @@ final class UserData {
     $removeQuery->execute();
   }
   
+  /**
+   * Add/update presence
+   *
+   */
+  public function setPresence($groupID, $date, $userPresence) {
+    foreach($userPresence as $userID => $presence) {
+      $insertQuery = self::$connection->prepare('IF EXISTS (SELECT * FROM ' . self::$prefix . 'presence WHERE group_id = :gid AND date = :date AND user_id = :uid) THEN BEGIN UPDATE ' . self::$prefix . 'presence SET presence = :present WHERE group_id = :gid AND date = :date AND user_id = :uid END ELSE BEGIN INSERT INTO ' . self::$prefix . 'presence (group_id, date, user_id, presence) VALUES(:gid, :date, :uid, :present) END');
+      $insertQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
+      $insertQuery->bindParam(':date', $date, PDO::PARAM_STR, 10);
+      $insertQuery->bindParam(':uid', $userID, PDO::PARAM_INT);
+      $insertQuery->bindParam(':present', $presence, PDO::PARAM_INT);
+      $insertQuery->execute();
+    }
+  }
+  
+  /**
+   * @return array of days of workshops in group
+   */
+  public function getDays($groupID) {
+    $selectQuery = self::$connection->prepare('SELECT DISTINCT days FROM ' . self::$prefix . 'presence WHERE group_id = :gid');
+    $selectQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
+    $selectQuery->execute();
+    
+    return $selectQuery->fetchAll();
+  }
+  
+  
+  /**
+   * @return presence of a particular day
+   */
+  public function getPresence($groupID, $date) {
+    $selectQuery = self::$connection->prepare('SELECT user_id, presence FROM ' . self::$prefix . 'presence WHERE group_id = :gid AND date = :date');
+    $selectQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
+    $selectQuery->bindParam(':date', $date, PDO::PARAM_STR, 10);
+    $selectQuery->execute();
+    
+    return $selectQuery->fetchAll();
+  }
+  
+  
+  /**
+   * Removes presence from particular date
+   *
+   */
+  public function removeDay($groupID, $date) {
+    $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'presence WHERE group_id = :gid AND date = :date');
+    $removeQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
+    $removeQuery->bindParam(':date', $date, PDO::PARAM_STR, 10);
+    $removeQuery->execute();
+  }
 }
