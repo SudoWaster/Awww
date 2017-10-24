@@ -316,6 +316,18 @@ final class UserData {
   
   
   /**
+   * @return whether user is in group
+   */
+  public function isInGroup($uid, $group) {
+    $selectQuery = self::$connection->prepare('SELECT FROM ' . self::$prefix . 'group_assign WHERE user_id = :uid AND group_id = :gid');
+    $selectQuery->bindParam(':uid', $uid, PDO::PARAM_INT);
+    $selectQuery->bindParam(':gid', $group, PDO::PARAM_INT);
+    $selectQuery->execute();
+    
+    return $selectQuery->rowCount() > 0;
+  }
+  
+  /**
    * Adds group
    *
    * @return group id or false if already exists
@@ -369,6 +381,11 @@ final class UserData {
     
     // achievements
     $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'achievements WHERE group_id=:gid');
+    $removeQuery->binParam(':gid', $id, PDO::PARAM_INT);
+    $removeQuery->execute();
+    
+    // posts
+    $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'group_posts WHERE group_id=:gid');
     $removeQuery->binParam(':gid', $id, PDO::PARAM_INT);
     $removeQuery->execute();
   }
@@ -501,4 +518,61 @@ final class UserData {
     
     return $selectQuery->fetchAll();
   }
+  
+  
+  /**
+   * Adds group post
+   *
+   * @returns post id or false if not allowed
+   */
+  public function addPost($opMAIL, $groupID, $post) {
+    
+    $op = getUser($opMAIL);
+    if($op < User::$USER_TYPES['INSTRUCTOR']) {
+      return false;
+    }
+    
+    $date = date('o-m-d');
+    $insertQuery = self::$connection->prepare('INSERT INTO ' . self::$prefix . 'group_posts (group_id, date, op_id, post_content) OUTPUT INSERTED.post_id VALUES(:gid, :date, :op, :post)');
+    $insertQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
+    $insertQuery->bindParam(':date', PDO::PARAM_STR, 10);
+    $insertQuery->bindParam(':op', $op->getID(), PDO::PARAM_INT);
+    $insertQuery->bindParam(':post', $post, PDO::PARAM_STR);
+    
+    $insertQuery->execute();
+    
+    return $insertQuery->fetch()['post_id'];
+  }
+  
+  /**
+   * Update post
+   * @return false if not allowed
+   */
+  public function updatePost($opMAIL, $group, $postID, $post) {
+    $op = getUser($opMAIL);
+    if($op < User::$USER_TYPES['INSTRUCTOR'] || !isInGroup($op->getID(), $group)) {
+      return false;  
+    } 
+    
+    $date = date('o-m-d');
+    $updateQuery = self::$connection->prepare('UPDATE ' . self::$prefix . 'group_posts SET date = :date, op_id = :op, post_content = :post WHERE post_id = :pid');
+    $updateQuery->bindParam(':date', $date, PDO::PARAM_STR, 10);
+    $updateQuery->bindParam(':op', $op->getID(), PDO::PARAM_INT);
+    $updateQuery->bindParam(':post', $post, PDO::PARAM_STR);
+    $updateQuery->bindParam(':pid', $postID, PDO::PARAM_INT);
+    $updateQuery->execute();
+    
+    return true;
+  }
+  
+  /**
+   * Remove post
+   *
+   */
+  public function removePost($postID) {
+    $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'group_posts WHERE post_id = :pid');
+    $removeQuery->bindParam(':pid', $postID, PDO::PARAM_INT);
+    $removeQuery->execute();
+  }
+  
 }
