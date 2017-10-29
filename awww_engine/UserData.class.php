@@ -14,11 +14,13 @@ final class UserData {
   private static $connection;
   
   // DATABASE LOGIN INFO
-  private static $server   = 'localhost';
-  private static $database = 'awww_data';
-  private static $user     = 'awww';
-  private static $pass     = 'test';
-  private static $prefix   = 'awww_';
+  private static $conf     = parse_ini_file("dbconfig.ini", true);
+  
+  private static $server   = $conf['DB']['SERVER'];
+  private static $database = $conf['DB']['BASE'];
+  private static $user     = $conf['DB']['USER'];
+  private static $pass     = $conf['DB']['PASS'];
+  private static $prefix   = $conf['DB']['PREFIX'];
   
   
   /**
