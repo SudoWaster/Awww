@@ -6,7 +6,7 @@ Session::startSession();
 $userdata = UserData::Instance();
 
 if(!Session::isLogged()) {
-  $conf = parse_ini_file("awwwconfig.ini", true);
+  $conf = parse_ini_file("../awww_engine/awwwconfig.ini", true);
   header('location: ' . $conf['HOST']['ADDRESS'] . 'awww-login.php');
 }
 
