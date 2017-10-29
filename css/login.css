@@ -31,6 +31,12 @@ body {
   margin-bottom: 10px;
 }
 
+.form-signin .error {
+  color: #ff0000;
+  margin-bottom: 10px;
+  font-weight: 200;
+}
+
 .form-signin .checkbox {
   font-weight: 400;
 }

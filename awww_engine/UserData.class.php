@@ -14,13 +14,11 @@ final class UserData {
   private static $connection;
   
   // DATABASE LOGIN INFO
-  private static $conf     = parse_ini_file("dbconfig.ini", true);
-  
-  private static $server   = $conf['DB']['SERVER'];
-  private static $database = $conf['DB']['BASE'];
-  private static $user     = $conf['DB']['USER'];
-  private static $pass     = $conf['DB']['PASS'];
-  private static $prefix   = $conf['DB']['PREFIX'];
+  private static $server;
+  private static $database;
+  private static $user;
+  private static $pass;
+  private static $prefix;
   
   
   /**
@@ -44,6 +42,14 @@ final class UserData {
    *
    */
   private function __construct() {
+    $conf     = parse_ini_file(__DIR__ . '/dbconfig.ini', true);
+  
+    self::$server   = $conf['DB']['SERVER'];
+    self::$database = $conf['DB']['BASE'];
+    self::$user     = $conf['DB']['USER'];
+    self::$pass     = $conf['DB']['PASS'];
+    self::$prefix   = $conf['DB']['PREFIX'];
+    
     self::connect();
   }
   
