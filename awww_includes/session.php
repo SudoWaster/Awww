@@ -7,7 +7,7 @@ $userdata = UserData::Instance();
 
 if(!Session::isLogged()) {
   $conf = parse_ini_file(__DIR__ . '../awww_engine/awwwconfig.ini', true);
-  header('location: ' . $conf['HOST']['ADDRESS'] . 'awww-login.php?error');
+  header('location: ' . $conf['PAGE']['ADDRESS'] . 'awww-login.php?error');
 }
 
 ?>

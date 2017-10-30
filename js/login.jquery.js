@@ -7,12 +7,13 @@ $(document).ready(function() {
     var imail  = $form.find('#inputEmail').val(), 
         ipass  = $form.find('#inputPassword').val();
     
+    $form.find('#signin-button').prop('disabled', true);
+    
     var posting = $.post('awww_includes/login_do.php', 
                          { login: imail, pass: ipass });
     
     posting.done(function(data) {
       window.location.href = 'awww-panel.php';
-      console.log("ejże");
     });
   });
 });

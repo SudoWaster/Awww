@@ -30,7 +30,7 @@
         <input type="email" id="inputEmail" class="form-control" placeholder="Email" required autofocus>
         <label for="inputPassword" class="sr-only">Hasło</label>
         <input type="password" id="inputPassword" class="form-control" placeholder="Hasło" required>
-        <button class="btn btn-lg btn-outline-dark btn-block" type="submit">Zaloguj</button>
+        <button class="btn btn-lg btn-outline-dark btn-block" type="submit" id="signin-button">Zaloguj</button>
       
         <span class="awww-version">AWWW v. <?php echo parse_ini_file('awww_engine/awwwconfig.ini', true)['VERSION']; ?></span>
       </form>
