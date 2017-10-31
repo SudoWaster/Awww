@@ -1,5 +1,5 @@
 <?php
-require_once 'User.class.php';
+require_once __DIR__ . '/User.class.php';
 
 /**
  * Stores database credentials and handles

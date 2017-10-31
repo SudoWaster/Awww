@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/User.class.php';
+
 final class Session {
   
   public static $sessionExpiration  = 5 * 60;   // 5 minutes expiration
@@ -70,7 +72,8 @@ final class Session {
     $_SESSION['SAFE_SID'] = true;
     
     if(isset($_SESSION['CURRENT_USER'])) {
-      self::bindUser(unserialize($_SESSION['CURRENT_USER']));
+      $user = unserialize($_SESSION['CURRENT_USER']);
+      self::bindUser($user);
     }
   }
   
@@ -101,7 +104,7 @@ final class Session {
    * @return logged status
    */
   public static function isLogged() {
-    return (isset(self::$user) && self::$user->canLogin());
+    return (isset(self::$user) && self::$user != null && self::$user->canLogin());
   }
        
        
