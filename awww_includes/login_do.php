@@ -9,7 +9,7 @@ $conf = Config::Instance();
 
 if(Session::isLogged()) {
   Session::destroySession();
-  header('location: ' . $conf->get()['HOST']['ADDRESS'] . 'awww-login.php');
+  header('location: ' . $conf->get()['HOST']['ADDRESS'] . 'awww-login.php?logout');
 }
 
 $mail = $_POST['login'];

@@ -12,7 +12,7 @@ if(!Session::isLogged()) {
 
 if(isset($PRIVILEGED) && $PRIVILEGED) {
   if(!Session::getUser()->isPrivileged()) {
-    header('location: ' . $conf->get()['HOST']['ADDRESS'] . 'awww-panel.php');
+    print '<h2>Nie masz dostępu do strony!</h2>';
   }
 }
 

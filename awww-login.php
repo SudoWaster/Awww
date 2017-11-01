@@ -1,3 +1,14 @@
+<?php
+require_once __DIR__ . '/awww_engine/Session.class.php';
+require_once __DIR__ . '/awww_engine/Config.class.php';
+
+Session::startSession();
+$conf = Config::Instance();
+
+if(Session::isLogged()) {
+  Session::destroySession();
+}
+?>
 <!doctype html>
 <html lang="pl">
   <head>
@@ -24,6 +35,10 @@
       <form method="post" class="form-signin">
         <?php if(isset($_GET['error'])) { ?>
         <h4 class="error">Niepoprawne logowanie</h4>
+        <?php } ?>
+        
+        <?php if(isset($_GET['logout'])) { ?>
+        <h4 class="error">Wylogowano</h4>
         <?php } ?>
         
         <label for="inputEmail" class="sr-only">Email</label>

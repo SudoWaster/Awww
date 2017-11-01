@@ -1,5 +1,6 @@
 <?php
 require_once 'awww_includes/session.php';
-?>
 
-<a href="awww_includes/login_do.php">Wyloguj</a>
+include 'awww_includes/content/header.php';
+include 'awww_includes/content/footer.php';
+?>
