@@ -11,6 +11,12 @@
   color: #666;
 }
 
+.separated {
+  margin: 1rem 0;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  background: #eee;
+}
 
 /**
  * Sign in list

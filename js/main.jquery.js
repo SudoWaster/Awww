@@ -24,7 +24,7 @@ var hashReload = function() {
     $('#main').load(address, function() {
       
       isLoading = false;
-      norefreshBind();
+      linkBind();
       
       // turn off animation
       $("#brand").removeClass('blink');
@@ -50,12 +50,24 @@ var norefreshConfirmAction = function($elem, event) {
   }
 }
 
-var norefreshBind = function() {
+var scrollTo = function($elem, event) {
+  event.preventDefault();
+  
+  var target = '#' + $elem.data('ref');
+  
+  $('html, body').animate({
+      scrollTop: $(target).offset().top
+  }, 300);
+}
+
+var linkBind = function() {
   $('.no-refresh').click(function(e) { norefreshAction($(this), e) } );
   $('.no-refresh-confirm').click(function(e) { norefreshConfirmAction($(this), e) } );
+  
+  $('.scroll-to').click(function(e) { scrollTo($(this), e) } );
 }
 
 $(document).ready(function() {
-  norefreshBind();
+  linkBind();
   hashReload();
 });

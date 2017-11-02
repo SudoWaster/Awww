@@ -445,19 +445,22 @@ final class UserData {
    * @return an array of Users in group
    *
    */
-  public function getAllFromGroup($id, $privileged = true) {
+  public function getAllFromGroup($id, $privileged = false) {
     
-    $privilegeCondition = self::$prefix . 'users.wtype > ' . User::$USER_TYPE['STUDENT'];
+    $privilegeCondition = self::$prefix . 'users.wtype > ' . User::$USER_TYPES['STUDENT'];
+    $else = self::$prefix . 'users.wtype = ' . User::$USER_TYPES['STUDENT'];
     
     // you may not like SQL, but it would be a lot harder using any other tool
-    $selectQuery = self::$connection->prepare('SELECT user_id, mail, name, wtype FROM ' . self::$prefix . 'users RIGHT JOIN ' . self::$prefix . 'group_assign ON ' . self::$prefix . 'group_assign.user_id = ' . self::$prefix . 'users.user_id WHERE ' . self::$prefix . 'group_assign.group_id = :gid ' . $privileged ? 'AND ' . $privilegeCondition : '' );
+    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'group_assign LEFT JOIN ' . self::$prefix . 'users ON ' . self::$prefix . 'group_assign.user_id = ' . self::$prefix . 'users.user_id WHERE group_id = :gid AND ' . ($privileged ? $privilegeCondition : $else) . ' ORDER BY name ASC');
     
     $selectQuery->bindParam(':gid', $id, PDO::PARAM_INT);
     $selectQuery->execute();
     
     $result = array();
+    $data = $selectQuery->fetchAll();
     
-    foreach($selectQuery->fetchAll() as $row) {
+    foreach($data as $row) {
+      
       $user = new User($row['user_id'], $row['mail'], $row['wtype'], $row['name']);
       
       array_push($result, $user);

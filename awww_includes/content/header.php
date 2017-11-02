@@ -48,7 +48,7 @@ $config = Config::Instance();
           </ul>
           <ul class="navbar-nav">
             <li class="nav-item pull-right">
-              <span class="nav-link">Witaj, <?php echo Session::getUser()->getName(); ?></span>
+              <a class="nav-link no-refresh" data-ref="user?id=<?php echo Session::getUser()->getID(); ?>" href="#">Witaj, <?php echo Session::getUser()->getName(); ?></a>
             </li>
           </ul>
         </div>
