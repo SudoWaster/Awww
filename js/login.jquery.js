@@ -13,7 +13,7 @@ $(document).ready(function() {
                          { login: imail, pass: ipass });
     
     posting.done(function(data) {
-      window.location.href = 'awww-panel.php';
+      window.location.href = 'apanel';
     });
   });
 });

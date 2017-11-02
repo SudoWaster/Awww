@@ -410,11 +410,23 @@ final class UserData {
   
   
   /**
-   * @return all active groups
+   * @return all groups
    *
    */
   public function getAllGroups() {
     $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'groups');
+    $selectQuery->execute();
+    
+    return $selectQuery->fetchAll();
+  }
+  
+  
+  /**
+   * @return all active groups
+   *
+   */
+  public function getAllGroups() {
+    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'groups WHERE vacancies > 0');
     $selectQuery->execute();
     
     return $selectQuery->fetchAll();

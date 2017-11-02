@@ -28,7 +28,7 @@ $config = Config::Instance();
     <header>
       <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
         
-        <a class="navbar-brand" href="<?php echo $config->get()['PANEL']['PAGE']; ?>"><?php echo $config->get()['PANEL']['TITLE']; ?></a>
+        <a id="brand" class="navbar-brand" href="<?php echo $config->get()['PANEL']['PAGE']; ?>"><?php echo $config->get()['PANEL']['TITLE']; ?></a>
         
         <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -37,13 +37,13 @@ $config = Config::Instance();
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-              <a class="nav-link no-refresh" data-ref="overview" href="awww-panel.php">Panel</a>
+              <a class="nav-link no-refresh" data-ref="overview" href="apanel">Panel</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link no-refresh" data-ref="profile" href="awww-panel.php?a=profile">Profil</a>
+              <a class="nav-link no-refresh" data-ref="settings" href="#!settings">Ustawienia</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="awww-login.php?logout">Wyloguj</a>
+              <a class="nav-link" href="alogin?logout">Wyloguj</a>
             </li>
           </ul>
           <ul class="navbar-nav">

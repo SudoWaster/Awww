@@ -1,17 +1,30 @@
+var hashReload = function() {
+  if (window.location.hash.substr(1,1) == "!") {
+  
+    $("#brand").addClass('blink');
+    
+    var hash = window.location.hash.substr(2);
+    var address = 'awww_includes/content/pages/' + hash + '.php';
+  
+    $('#main').load(address, function() {
+      norefreshBind();
+      $("#brand").removeClass('blink');
+    });
+  }
+}
+
 var norefreshAction = function($elem, event) {
   event.preventDefault();
   
-  var address = '/awww_includes/content/' + $elem.data('ref') . '.php';
-  
-  $('#main').load(address, function() {
-    norefreshBind();
-  });
+  window.location.hash = '!' + $elem.data('ref');
+  hashReload();
 }
 
 var norefreshBind = function() {
-  $('.no-refresh').click(function(e) { norefresh-action($(this), e) } );
+  $('.no-refresh').click(function(e) { norefreshAction($(this), e) } );
 }
 
 $(document).ready(function() {
   norefreshBind();
+  hashReload();
 });
