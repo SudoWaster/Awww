@@ -60,8 +60,9 @@ final class UserData {
    */
   private static function connect() {
     self::$connection = new PDO(
-      'mysql:host=' . self::$server . 
-      ';dbname=' . self::$database, 
+      'mysql:host=' . self::$server . ';' .
+      'dbname=' . self::$database . ';' .
+      'charset=utf8', 
       self::$user, self::$pass);
     
     self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -425,8 +426,9 @@ final class UserData {
    * @return all active groups
    *
    */
-  public function getAllGroups() {
-    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'groups WHERE vacancies > 0');
+  public function getAvailableGroups($id) {
+    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'groups LEFT JOIN ' . self::$prefix . 'group_assign ON ' . self::$prefix . 'groups.group_id = ' . self::$prefix . 'group_assign.group_id WHERE vacancies > 0 AND (user_id <> :id OR user_id IS NULL)');
+    $selectQuery->bindParam(':id', $id, PDO::PARAM_INT);
     $selectQuery->execute();
     
     return $selectQuery->fetchAll();

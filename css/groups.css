@@ -1,0 +1,22 @@
+.ginfo {
+  font-weight: 200;
+  color: #666;
+}
+
+.col-group {
+  margin-bottom: 2rem;
+}
+
+.group-title > * {
+  display: inline-block;
+}
+
+.group-title .signin-link {
+  margin-left: 10px;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.group-desc {
+  color: #666;
+}
