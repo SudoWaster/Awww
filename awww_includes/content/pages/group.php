@@ -14,7 +14,7 @@ $instructors  = $userdata->getAllFromGroup($groupID, true);
 
 <?php
 // if user tries to be smart
-if (!$userdata->isInGroup($userID, $groupID)) { ?>
+if (!$userdata->isInGroup($userID, $groupID) && !Session::getUser()->isAdmin()) { ?>
 
   <h1>Brak dostępu</h1>
   <h2 class="ginfo">Nie należysz do grupy <?php echo $group['group_name']; ?></h2>
@@ -40,6 +40,13 @@ if (!$userdata->isInGroup($userID, $groupID)) { ?>
       <li>
         <a role="button" class="btn btn-outline-primary scroll-to" data-ref="" href="#">Obecność</a>
       </li>
+      
+      <?php
+      if (Session::getUser()->isPrivileged()) {?>
+      <li>
+        <a role="button" class="btn btn-outline-primary no-refresh" data-ref="" href="#">Edytuj</a>
+      </li>
+      <?php } ?>
 
       <li>
         <a role="button" class="btn btn-outline-danger no-refresh-confirm" data-msg="Na pewno chcesz opuścić grupę?" data-ref="leave?g=<?php echo $group['group_id']; ?>" href="#">Opuść grupę</a>

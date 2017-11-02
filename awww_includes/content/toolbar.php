@@ -21,6 +21,13 @@ $groups = $userdata->getUserGroups($userID);
                 <h5>Grupy</h5>
               </li>
               
+              <?php 
+              if (Session::getUser()->isPrivileged()) { ?>
+              <li class="nav-item">
+                <a class="nav-link no-refresh" data-ref="managegroups" href="#!managegroups">Zarządzanie</a>
+              </li>
+              <?php } ?>
+              
               <li class="nav-item">
                 <a class="nav-link no-refresh" data-ref="groupsign" href="#!groupsign">Zapisy</a>
               </li>
@@ -56,4 +63,24 @@ $groups = $userdata->getUserGroups($userID);
               </li>
               
             </ul>
+            
+            <?php
+            if (Session::getUser()->isAdmin()) { ?>
+            
+            <ul class="nav nav-pills flex-column">
+              
+              <li class="nav-item">
+                <h5>System</h5>
+              </li>
+              
+              <li class="nav-item">
+                <a class="nav-link no-refresh" data-ref="manageusers" href="#!manageusers">Użytkownicy</a>
+              </li>
+              
+              <li class="nav-item">
+                <a class="nav-link no-refresh" data-ref="manageawww" href="#!manageawww">Ustawienia systemu</a>
+              </li>
+            </ul>
+            
+            <?php } ?>
           </nav>
