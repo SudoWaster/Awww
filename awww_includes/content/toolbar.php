@@ -12,8 +12,8 @@
               </li>
               
               <li class="nav-item">
-                <a class="nav-link no-refresh" data-ref="grouplist" href="#!grouplist">Zapisy</a>
-                <a class="nav-link no-refresh" data-ref="" href="#">Twoje grupy</a>
+                <a class="nav-link no-refresh" data-ref="groupsign" href="#!groupsign">Zapisy</a>
+                <a class="nav-link no-refresh" data-ref="grouplist" href="#!grouplist">Twoje grupy</a>
               </li>
               
             </ul>

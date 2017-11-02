@@ -333,7 +333,7 @@ final class UserData {
    * @return whether user is in group
    */
   public function isInGroup($uid, $group) {
-    $selectQuery = self::$connection->prepare('SELECT FROM ' . self::$prefix . 'group_assign WHERE user_id = :uid AND group_id = :gid');
+    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'group_assign WHERE user_id = :uid AND group_id = :gid');
     $selectQuery->bindParam(':uid', $uid, PDO::PARAM_INT);
     $selectQuery->bindParam(':gid', $group, PDO::PARAM_INT);
     $selectQuery->execute();
@@ -420,18 +420,18 @@ final class UserData {
     
     return $selectQuery->fetchAll();
   }
-  
+
   
   /**
-   * @return all active groups
+   * @return all groups
    *
    */
-  public function getAvailableGroups($id) {
-    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'groups LEFT JOIN ' . self::$prefix . 'group_assign ON ' . self::$prefix . 'groups.group_id = ' . self::$prefix . 'group_assign.group_id WHERE vacancies > 0 AND (user_id <> :id OR user_id IS NULL)');
-    $selectQuery->bindParam(':id', $id, PDO::PARAM_INT);
+  public function getGroup($gid) {
+    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'groups WHERE group_id = :gid');
+    $selectQuery->bindParam(':gid', $gid, PDO::PARAM_INT);
     $selectQuery->execute();
     
-    return $selectQuery->fetchAll();
+    return $selectQuery->fetch();
   }
   
   

@@ -6,8 +6,8 @@ body {
   padding-top: 3.5rem;
 }
 
-#brand {
-  transition: all 1s ease;
+a {
+  text-decoration: none;
 }
 
 h1 {
@@ -15,6 +15,11 @@ h1 {
   margin-bottom: 20px;
   border-bottom: 1px solid #eee;
 }
+
+#brand {
+  transition: all 1s ease;
+}
+
 
 /*
  * Sidebar
