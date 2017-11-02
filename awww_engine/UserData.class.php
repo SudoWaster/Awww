@@ -321,7 +321,13 @@ final class UserData {
   /**
    * Removes user from group
    */
-  public function removeFromGroup($id, $group) {
+  public function removeFromGroup($id, $group, $updateVacancy = true) {
+    if(!!$updateVacancy) {
+      $updateQuery = self::$connection->prepare('UPDATE ' . self::$prefix . 'groups SET vacancies = vacancies + 1 WHERE group_id = :gid');
+      $updateQuery->bindParam(':gid', $group, PDO::PARAM_INT);
+      $updateQuery->execute();
+    }
+    
     $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'group_assign WHERE user_id=:uid AND group_id=:gid');
     $removeQuery->bindParam(':uid', $id, PDO::PARAM_INT);
     $removeQuery->bindParam(':gid', $group, PDO::PARAM_INT);

@@ -20,12 +20,12 @@ if($result) {
   $group = $userdata->getGroup($group_id);
 ?>
   <h2 class="ginfo">Dodano do grupy <?php echo $group['group_name']; ?></h2>
-  <a class="no-refresh" data-ref="grouplist" href="#!grouplist">Powrót</a>
+  <a role="button" class="btn btn-outline-primary" href="apanel">Powrót</a>
 <?php
 } else {
 ?>
   <h2 class="ginfo">Dodawanie zakończone błędem</h2>
-  <a class="no-refresh" data-ref="grouplist" href="#!grouplist">Powrót</a>
+  <a role="button" class="btn btn-outline-primary" href="apanel">Powrót</a>
 <?php
 }
 ?>

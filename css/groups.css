@@ -1,12 +1,21 @@
+/**
+ * General
+ *
+ */
 .ginfo {
   font-weight: 200;
   color: #666;
 }
 
-.col-group {
-  margin-bottom: 2rem;
+.group-desc {
+  color: #666;
 }
 
+
+/**
+ * Sign in list
+ *
+ */
 .group-title > * {
   display: inline-block;
 }
@@ -16,6 +25,21 @@
   font-size: 0.9rem;
 }
 
-.group-desc {
-  color: #666;
+.col-group {
+  margin-bottom: 2rem;
+}
+
+
+/**
+ * Group options
+ *
+ */
+.options {
+  list-style: none;
+  padding-left: 0;
+}
+
+.options > li {
+  display: inline-block;
+  margin: 0 0;
 }

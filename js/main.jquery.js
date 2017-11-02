@@ -39,8 +39,20 @@ var norefreshAction = function($elem, event) {
   hashReload();
 }
 
+var norefreshConfirmAction = function($elem, event) {
+  event.preventDefault();
+  
+  var canDo = confirm($elem.data('msg'));
+  
+  if(canDo) {
+    window.location.hash = '!' + $elem.data('ref');
+    hashReload();
+  }
+}
+
 var norefreshBind = function() {
   $('.no-refresh').click(function(e) { norefreshAction($(this), e) } );
+  $('.no-refresh-confirm').click(function(e) { norefreshConfirmAction($(this), e) } );
 }
 
 $(document).ready(function() {
