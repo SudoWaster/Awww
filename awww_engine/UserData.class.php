@@ -108,13 +108,33 @@ final class UserData {
     return $this->getUser($result['mail']);
   }
   
+  
+  /**
+   * @return user from database
+   */
+  public function getUserByID($id) {
+    $userQuery = self::$connection->prepare('SELECT user_id, mail, wtype, name FROM ' . self::$prefix . 'users WHERE user_id=:uid');
+    
+    $userQuery->bindParam(':uid', $id, PDO::PARAM_INT);
+    $userQuery->execute();
+    
+    if($userQuery->rowCount() <= 0) {
+      return $this->getDefaultUser();
+    }
+    
+    $result = $userQuery->fetch();
+    return new User($result['user_id'], $result['mail'], $result['wtype'], $result['name']);
+  }
+  
+  
+  
   /**
    * @return user from database
    */
   public function getUser($mail) {
     $userQuery = self::$connection->prepare('SELECT user_id, mail, wtype, name FROM ' . self::$prefix . 'users WHERE mail=:login');
     
-    $userQuery->bindParam(':login', $mail, PDO::PARAM_INT);
+    $userQuery->bindParam(':login', $mail, PDO::PARAM_STR, 64);
     $userQuery->execute();
     
     if($userQuery->rowCount() <= 0) {

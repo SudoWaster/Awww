@@ -8,6 +8,7 @@ $groupID      = $_GET['id'];
 $group        = $userdata->getGroup($groupID);
 $members      = $userdata->getAllFromGroup($groupID);
 $instructors  = $userdata->getAllFromGroup($groupID, true);
+$posts        = $userdata->getPosts($groupID);
 ?>
 
 <link rel="stylesheet" type="text/css" href="css/groups.css" />
@@ -78,4 +79,38 @@ if (!$userdata->isInGroup($userID, $groupID) && !Session::getUser()->isAdmin()) 
       ?>
     </ul>
   </div>
+</section>
+
+<h2>Informacje od prowadzących</h2>
+<?php
+if (Session::getUser()->isPrivileged()) { ?>
+
+<a role="button" class="btn btn-outline-primary" href="">Dodaj</a>
+
+<?php } ?>
+
+<section class="row posts">
+  
+  <?php
+  foreach ($posts as $post) { 
+    $author = $userdata->getUserByID($post['op_id']);
+  ?>
+  <div class="col-12 post">
+    <div class="post-info">
+      <span class="date"><?php echo $post['date']; ?></span>
+      <span class="author"><?php echo $author->getName(); ?></span>
+      
+      <?php 
+      if (Session::getUser()->isPrivileged()) { ?>
+      <a role="button" class="btn btn-outline-primary" data-ref="" href="">Edytuj</a>
+      <a rele="button" class="btn btn-outline-danger" date-ref="" href="">Usuń</a>
+      <?php } ?>
+      
+    </div>
+    
+    <div class="post-content">
+      <?php echo $post['post_content']; ?>
+    </div>
+  </div>
+  <?php } ?>
 </section>

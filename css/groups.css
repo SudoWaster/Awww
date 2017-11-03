@@ -49,3 +49,19 @@
   display: inline-block;
   margin: 0 0;
 }
+
+
+/**
+ * Posts
+ *
+ */
+.post {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.post-info {
+  color: #666;
+  margin-bottom: 5px;
+}
