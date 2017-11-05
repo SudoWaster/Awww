@@ -165,7 +165,7 @@ final class UserData {
       return false;
     }
     
-    $createUserQuery = self::$connection->prepare('INSERT INTO ' . self::$prefix . 'users (mail, password, name, wtype) OUTPUT INSERTED.user_id VALUES(:mail, :pass, :name, :type)');
+    $createUserQuery = self::$connection->prepare('INSERT INTO ' . self::$prefix . 'users (mail, password, name, wtype) VALUES(:mail, :pass, :name, :type)');
     
     $createUserQuery->bindParam(':mail', $mail, PDO::PARAM_STR, 64);
     $createUserQuery->bindParam(':pass', self::saltHash($password, $mail), PDO::PARAM_STR, 64);
@@ -174,7 +174,7 @@ final class UserData {
     
     $createUserQuery->execute();
     
-    return $createUserQuery->fetch()['user_id'];
+    return self::$connection->lastInsertId();
   }
   
   
@@ -204,21 +204,25 @@ final class UserData {
     $removeQuery->bindParam(':mail', $mail, PDO::PARAM_STR, 64);
     $removeQuery->execute();
     
-    // group assign table
-    $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'group_assign WHERE user_id=:uid');
-    $removeQuery->bindParam(':uid', $id, PDO::PARAM_INT);
-    $removeQuery->bindParam(':mail', $mail, PDO::PARAM_STR, 64);
-    $removeQuery->execute();
+    try {
     
-    // user badges
-    $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'user_badges WHERE user_id = :uid');
-    $removeQuery->bindParam(':uid', $id, PDO::PARAM_INT);
-    $removeQuery->execute();
-    
-    // presence
-    $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'presence WHERE user_id = :uid');
-    $removeQuery->bindParam(':uid', $id, PDO::PARAM_INT);
-    $removeQuery->execute();
+      // group assign table
+      $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'group_assign WHERE user_id=:uid');
+      $removeQuery->bindParam(':uid', $id, PDO::PARAM_INT);
+      $removeQuery->bindParam(':mail', $mail, PDO::PARAM_STR, 64);
+      $removeQuery->execute();
+
+      // user badges
+      $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'user_badges WHERE user_id = :uid');
+      $removeQuery->bindParam(':uid', $id, PDO::PARAM_INT);
+      $removeQuery->execute();
+
+      // presence
+      $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'presence WHERE user_id = :uid');
+      $removeQuery->bindParam(':uid', $id, PDO::PARAM_INT);
+      $removeQuery->execute();
+      
+    } catch (Exception $e) {}
   }
   
   
@@ -381,13 +385,13 @@ final class UserData {
       return false;
     }
     
-    $insertQuery = self::$connection->prepare('INSERT INTO ' . self::$prefix . 'groups (group_name, group_desc, vacancies) OUTPUT INSERTED.group_id VALUES(:name, :desc :vacancies)');
+    $insertQuery = self::$connection->prepare('INSERT INTO ' . self::$prefix . 'groups (group_name, group_desc, vacancies) VALUES(:name, :desc, :vacancies)');
     $insertQuery->bindParam(':name', $name, PDO::PARAM_STR, 64);
     $insertQuery->bindParam(':desc', $description, PDO::PARAM_STR, 512);
     $insertQuery->bindParam(':vacancies', $vacancies, PDO::PARAM_INT);
     $insertQuery->execute();
     
-    return $insertQuery->fetch()['group_id'];
+    return self::$connection->lastInsertId();
   }
   
   
@@ -411,28 +415,31 @@ final class UserData {
   public function removeGroup($id) {
     // groups
     $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'groups WHERE group_id=:gid');
-    $removeQuery->binParam(':gid', $id, PDO::PARAM_INT);
+    $removeQuery->bindParam(':gid', $id, PDO::PARAM_INT);
     $removeQuery->execute();
     
-    // group assign
-    $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'group_assign WHERE group_id=:gid');
-    $removeQuery->binParam(':gid', $id, PDO::PARAM_INT);
-    $removeQuery->execute();
-    
-    // achievements
-    $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'achievements WHERE group_id=:gid');
-    $removeQuery->binParam(':gid', $id, PDO::PARAM_INT);
-    $removeQuery->execute();
-    
-    // posts
-    $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'group_posts WHERE group_id=:gid');
-    $removeQuery->binParam(':gid', $id, PDO::PARAM_INT);
-    $removeQuery->execute();
-    
-    // presence
-    $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'presence WHERE group_id=:gid');
-    $removeQuery->binParam(':gid', $id, PDO::PARAM_INT);
-    $removeQuery->execute();
+    try {
+      // group assign
+      $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'group_assign WHERE group_id=:gid');
+      $removeQuery->bindParam(':gid', $id, PDO::PARAM_INT);
+      $removeQuery->execute();
+
+      // achievements
+      $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'achievements WHERE group_id=:gid');
+      $removeQuery->bindParam(':gid', $id, PDO::PARAM_INT);
+      $removeQuery->execute();
+
+      // posts
+      $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'group_posts WHERE group_id=:gid');
+      $removeQuery->bindParam(':gid', $id, PDO::PARAM_INT);
+      $removeQuery->execute();
+
+      // presence
+      $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'presence WHERE group_id=:gid');
+      $removeQuery->bindParam(':gid', $id, PDO::PARAM_INT);
+      $removeQuery->execute();
+    }
+    catch (Exception $e) {}
   }
   
   
@@ -504,13 +511,13 @@ final class UserData {
       return false;
     }
     
-    $insertQuery = self::$connection->prepare('INSERT INTO ' . self::$prefix . 'achievements (title, description, group_id) OUTPUT INSERTED.achievement_id VALUES(:title, :description, :gid)');
+    $insertQuery = self::$connection->prepare('INSERT INTO ' . self::$prefix . 'achievements (title, description, group_id) VALUES(:title, :description, :gid)');
     $insertQuery->bindParam(':title', $title, PDO::PARAM_STR, 64);
     $insertQuery->bindParam(':description', $description, PDO::PARAM_STR, 512);
     $insertQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
     $insertQuery->execute();
     
-    return $insertQuery->fetch()['achievement_id'];
+    return self::$connection->lastInsertId();
   }
   
   
@@ -537,10 +544,12 @@ final class UserData {
     $removeQuery->bindParam(':aid', $id, PDO::PARAM_INT);
     $removeQuery->execute();
     
-    // user badges
-    $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'user_badges WHERE achievement_id = :aid');
-    $removeQuery->bindParam(':aid', $id, PDO::PARAM_INT);
-    $removeQuery->execute();
+    try {
+      // user badges
+      $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'user_badges WHERE achievement_id = :aid');
+      $removeQuery->bindParam(':aid', $id, PDO::PARAM_INT);
+      $removeQuery->execute();
+    } catch(Exception $e) {}
   }
   
   
@@ -588,21 +597,23 @@ final class UserData {
    */
   public function addPost($opMAIL, $groupID, $post) {
     
-    $op = getUser($opMAIL);
-    if($op < User::$USER_TYPES['INSTRUCTOR']) {
+    $op = $this->getUser($opMAIL);
+    if(!$op->isPrivileged()) {
       return false;
     }
     
     $date = date('o-m-d');
-    $insertQuery = self::$connection->prepare('INSERT INTO ' . self::$prefix . 'group_posts (group_id, date, op_id, post_content) OUTPUT INSERTED.post_id VALUES(:gid, :date, :op, :post)');
+    $opID = $op->getID();
+    
+    $insertQuery = self::$connection->prepare('INSERT INTO ' . self::$prefix . 'group_posts (group_id, date, op_id, post_content) VALUES(:gid, :date, :op, :post)');
     $insertQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
-    $insertQuery->bindParam(':date', PDO::PARAM_STR, 10);
-    $insertQuery->bindParam(':op', $op->getID(), PDO::PARAM_INT);
+    $insertQuery->bindParam(':date', $date, PDO::PARAM_STR);
+    $insertQuery->bindParam(':op', $opID, PDO::PARAM_INT);
     $insertQuery->bindParam(':post', $post, PDO::PARAM_STR);
     
     $insertQuery->execute();
     
-    return $insertQuery->fetch()['post_id'];
+    return self::$connection->lastInsertId();
   }
   
   /**
@@ -610,15 +621,17 @@ final class UserData {
    * @return false if not allowed
    */
   public function updatePost($opMAIL, $group, $postID, $post) {
-    $op = getUser($opMAIL);
-    if($op < User::$USER_TYPES['INSTRUCTOR'] || !isInGroup($op->getID(), $group)) {
+    $op = $this->getUser($opMAIL);
+    if(!$op->isPrivileged() || !$this->isInGroup($op->getID(), $group)) {
       return false;  
     } 
     
     $date = date('o-m-d');
+    $opID = $op->getID();
+    
     $updateQuery = self::$connection->prepare('UPDATE ' . self::$prefix . 'group_posts SET date = :date, op_id = :op, post_content = :post WHERE post_id = :pid');
-    $updateQuery->bindParam(':date', $date, PDO::PARAM_STR, 10);
-    $updateQuery->bindParam(':op', $op->getID(), PDO::PARAM_INT);
+    $updateQuery->bindParam(':date', $date, PDO::PARAM_STR);
+    $updateQuery->bindParam(':op', $opID, PDO::PARAM_INT);
     $updateQuery->bindParam(':post', $post, PDO::PARAM_STR);
     $updateQuery->bindParam(':pid', $postID, PDO::PARAM_INT);
     $updateQuery->execute();
@@ -650,6 +663,19 @@ final class UserData {
     $selectQuery->execute();
     
     return $selectQuery->fetchAll();
+  }
+  
+  
+  /**
+   * @return newest post in group
+   *
+   */
+  public function getNewestPost($groupID) {
+    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'group_posts WHERE group_id = :gid ORDER BY date DESC LIMIT 1');
+    $selectQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
+    $selectQuery->execute();
+    
+    return $selectQuery->fetch();
   }
   
   
