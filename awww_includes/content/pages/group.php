@@ -182,6 +182,13 @@ if (Session::getUser()->isPrivileged()) { ?>
 
 <h2>Osiągnięcia</h2>
 
+<?php 
+if (Session::getUser()->isPrivileged()) {?>
+
+<a role="button" class="btn btn-outline-primary" href="#">Dodaj</a> 
+  
+<?php } ?>
+
 <section id="achievements">
 
 <?php
@@ -205,6 +212,13 @@ foreach ($achievements as $achievement) {
       <div class="alert <?php echo $alertClass; ?>">
         <h5><?php echo $achievement['title']; ?></h5>
         <p><?php echo $achievement['description']; ?></p>
+        <?php 
+        if (Session::getUser()->isPrivileged()) {?>
+
+        <a role="button" class="btn btn-outline-primary" href="#">Edytuj</a> 
+        <a role="button" class="btn btn-outline-danger no-refresh-confirm" data-msg="Czy na pewno chcesz usunąć to osiągnięcie?" data-ref="removeachievement?id=<?php echo $achievement['achievement_id']; ?>" href="#">Usuń</a> 
+
+        <?php } ?>
       </div>
     </div>
   
