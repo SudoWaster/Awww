@@ -34,7 +34,7 @@ if(Session::isLogged()) {
 
       <form method="post" class="form-signin">
         <?php if(isset($_GET['error'])) { ?>
-        <h4 class="error">Niepoprawne logowanie</h4>
+        <h4 class="error">Zaloguj się</h4>
         <?php } ?>
         
         <?php if(isset($_GET['logout'])) { ?>
