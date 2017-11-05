@@ -23,6 +23,10 @@
   display: none;
 }
 
+section {
+  margin-bottom: 1rem;
+}
+
 /**
  * Sign in list
  *
@@ -60,13 +64,21 @@
  * Posts
  *
  */
+.posts {
+  padding: 1.5rem;
+}
+
 .post {
+  max-width: 100%;
   padding-top: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #eee;
+  margin-bottom: .5rem;
+  border-radius: 13px;
+  border: 1px solid #eee;
 }
 
 .post-info {
   color: #666;
+  font-size: 0.7rem;
   margin-bottom: 5px;
 }

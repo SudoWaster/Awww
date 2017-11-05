@@ -118,7 +118,7 @@ if (!$userdata->isInGroup($userID, $groupID) && !Session::getUser()->isAdmin()) 
   </div>
 </section>
 
-<h2>Informacje od prowadzących</h2>
+<h2>Wpisy prowadzących</h2>
 <?php
 if (Session::getUser()->isPrivileged()) { ?>
 
