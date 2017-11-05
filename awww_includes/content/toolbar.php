@@ -18,7 +18,7 @@ $groups = $userdata->getUserGroups($userID);
             <ul class="nav nav-pills flex-column">
               
               <li class="nav-item">
-                <h5>Grupy</h5>
+                <h5>Grupy <span class="badge badge-primary"><?php echo count($groups); ?></span></h5>
               </li>
               
               <?php 

@@ -150,7 +150,7 @@ final class UserData {
    * @return a null user with no access
    */
   public function getDefaultUser() {
-    return new User(null, null, 0, null, null);
+    return new User(null, null, 0, null, null, null);
   }
   
   
@@ -734,6 +734,28 @@ final class UserData {
   
   
   /**
+   * @return presence of a particular day
+   */
+  public function getUserPresence($userID, $groupID) {
+    $selectQuery = self::$connection->prepare('SELECT COUNT(presence) as cnt FROM ' . self::$prefix . 'presence WHERE group_id = :gid AND user_id = :uid');
+    $selectQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
+    $selectQuery->bindParam(':uid', $userID, PDO::PARAM_INT);
+    $selectQuery->execute();
+    
+    $days = $selectQuery->fetch()['cnt'];
+    
+    if ($days == 0) return 0;
+    
+    $selectQuery = self::$connection->prepare('SELECT COUNT(presence) as cnt FROM ' . self::$prefix . 'presence WHERE group_id = :gid AND user_id = :uid AND presence = 1');
+    $selectQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
+    $selectQuery->bindParam(':uid', $userID, PDO::PARAM_INT);
+    $selectQuery->execute();
+    
+    return $selectQuery->fetch()['cnt'] / $days;
+  }
+  
+  
+  /**
    * Removes presence from particular date
    *
    */
@@ -751,16 +773,36 @@ final class UserData {
    */
   public static function getAlertClass($progress) {
     if ($progress >= 0.75) { 
-      return "alert-success"; 
+      return 'alert-success'; 
     } 
     else if ($progress >= 0.5) { 
-      return "alert-info"; 
+      return 'alert-info'; 
     } 
     else if ($progress >= 0.25) { 
-      return "alert-dark"; 
+      return 'alert-dark'; 
     }
     else { 
-      return "alert-light"; 
+      return 'alert-light'; 
+    } 
+  }
+  
+  
+  /**
+   * Get badge classes
+   *
+   */
+  public static function getBadgeClass($progress) {
+    if ($progress >= 0.75) { 
+      return 'alert-success'; 
+    } 
+    else if ($progress >= 0.5) { 
+      return 'alert-primary'; 
+    } 
+    else if ($progress >= 0.25) { 
+      return 'alert-warning'; 
+    }
+    else { 
+      return 'alert-secondary'; 
     } 
   }
 }

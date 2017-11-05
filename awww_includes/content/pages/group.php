@@ -9,6 +9,7 @@ $group        = $userdata->getGroup($groupID);
 $members      = $userdata->getAllFromGroup($groupID);
 $instructors  = $userdata->getAllFromGroup($groupID, true);
 $posts        = $userdata->getPosts($groupID);
+$presence     = $userdata->getUserPresence($userID, $groupID);
 ?>
 
 <link rel="stylesheet" type="text/css" href="css/groups.css" />
@@ -33,9 +34,9 @@ if (!$userdata->isInGroup($userID, $groupID) && !Session::getUser()->isAdmin()) 
       <li>
         <a role="button" class="btn btn-outline-primary scroll-to" data-ref="instructors" href="#">Prowadzący</a>
       </li>
-
+      
       <li>
-        <a role="button" class="btn btn-outline-primary scroll-to" data-ref="" href="#">Obecność</a>
+        <a role="button" class="btn btn-outline-primary scroll-to" data-ref="posts" href="#">Wpisy prowadzących</a>
       </li>
       
       <li>
@@ -44,6 +45,10 @@ if (!$userdata->isInGroup($userID, $groupID) && !Session::getUser()->isAdmin()) 
       
       <?php
       if (Session::getUser()->isPrivileged()) {?>
+      <li>
+        <a role="button" class="btn btn-outline-primary scroll-to" data-ref="presence" href="#">Obecność</a>
+      </li>
+      
       <li>
         <a role="button" class="btn btn-outline-primary edit-group-button" href="#">Edytuj</a>
       </li>
@@ -56,8 +61,14 @@ if (!$userdata->isInGroup($userID, $groupID) && !Session::getUser()->isAdmin()) 
   </div>
 
   <div class="col-12 group-info">
+    <?php
+    if(!Session::getUser()->isPrivileged()) { ?>
+    <div class="alert alert-light">Obecność: <span class="badge <?php echo UserData::getBadgeClass($presence); ?>"><?php echo round(100 * $presence); ?>%</span></div>
+    <?php } ?>
+    
     <div class="group-vacancies">Wolne miejsca: <?php echo $group['vacancies']; ?></div>
     <div class="group-desc"><?php echo $group['group_desc']; ?></div>
+
   </div>
   
   <div class="col-12 group-edit hidden">
@@ -118,6 +129,15 @@ if (!$userdata->isInGroup($userID, $groupID) && !Session::getUser()->isAdmin()) 
   </div>
 </section>
 
+
+
+
+
+
+
+<!-- POSTS -->
+
+
 <h2>Wpisy prowadzących</h2>
 <?php
 if (Session::getUser()->isPrivileged()) { ?>
@@ -126,7 +146,7 @@ if (Session::getUser()->isPrivileged()) { ?>
 
 <?php } ?>
 
-<section class="row posts">
+<section id="posts" class="row posts">
   
   <?php
   if (Session::getUser()->isPrivileged()) {?>
@@ -180,6 +200,30 @@ if (Session::getUser()->isPrivileged()) { ?>
 </section>
 
 
+
+
+
+<!-- PRESENCE -->
+
+<?php
+if (Session::getUser()->isPrivileged()) { ?>
+<section id="presence" class="row">
+  <div class="col-12 separated bg-light">
+    <h2>Obecność</h2>
+    
+    
+  </div>
+
+</section>
+<?php } ?>
+
+
+
+
+
+<!-- ACHIEVEMENTS -->
+
+
 <h2>Osiągnięcia</h2>
 
 <?php 
@@ -217,7 +261,7 @@ foreach ($achievements as $achievement) {
   $alertClass = in_array ($achievement['achievement_id'], array_column($userBadges, 'achievement_id')) ? 'alert-success' : 'alert-light';
   ?>
   
-    <div class="col-4">
+    <div class="col-12 col-md-4">
       <div class="alert <?php echo $alertClass; ?>">
         <h5><?php echo $achievement['title']; ?></h5>
         <p><?php echo $achievement['description']; ?></p>

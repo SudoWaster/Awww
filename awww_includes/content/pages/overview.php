@@ -16,6 +16,7 @@ foreach ($groups as $group) {
   $i++;
   
   $progress = $userdata->getUserProgress($user->getID(), $group['group_id']);
+  $presence = $userdata->getUserPresence($user->getID(), $group['group_id']);
   
   if($i == 1) {?> <div class="row"> <?php } ?>
   
@@ -30,8 +31,17 @@ foreach ($groups as $group) {
     <?php } ?>
     
     <div class="overview-group-name">
-      <a role="button" class="btn btn-outline-primary no-refresh" data-ref="group?id=<?php echo $group['group_id']; ?>" href="#"><?php echo $group['group_name']; ?></a>
+      <a role="button" class="btn btn-outline-primary no-refresh" data-ref="group?id=<?php echo $group['group_id']; ?>" href="#">
+        
+        <?php echo $group['group_name']; ?>
+      
+      
+        <?php if(!$user->isPrivileged()) { ?>
+        <span class="badge <?php echo UserData::getBadgeClass($presence); ?>"><?php echo round(100 * $presence); ?>%</span>
+        <?php } ?>
+      </a>
     </div>
+    
   </div>
   
   <?php if($i == 3) { $i = 0; ?> </div> <?php }
