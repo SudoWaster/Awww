@@ -114,3 +114,34 @@ input {
     opacity: 1;
   }
 }
+
+/*
+ * PROFILE
+ */
+.item-name {
+  font-weight: 700;
+}
+
+.group-list {
+  list-style: none;
+}
+
+.group-desc {
+  color: #999;
+  font-size: 0.7rem;
+}
+
+.profile-section {
+  margin-top: 1rem;
+  padding-top: .5rem;
+}
+
+.user-progress {
+  text-align: center;
+}
+
+.user-progress .alert {
+  width: 5rem;
+  max-width: 100%;
+  margin: 0 auto;
+}

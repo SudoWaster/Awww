@@ -286,17 +286,17 @@ final class UserData {
   public function getUserProgress($uid, $groupID) {
     $result = 0;
     
-    $selectQuery = self::$connection->prepare('SELECT COUNT(a.achievement_id) FROM ' . self::$prefix . 'achievements a RIGHT JOIN ' . self::$prefix . 'user_bagdes ub ON a.achievement_id = ub.achievement_id WHERE ub.user_id = :uid AND a.group_id = :gid');
+    $selectQuery = self::$connection->prepare('SELECT COUNT(a.achievement_id) as cnt FROM ' . self::$prefix . 'achievements a RIGHT JOIN ' . self::$prefix . 'user_badges ub ON a.achievement_id = ub.achievement_id WHERE ub.user_id = :uid AND a.group_id = :gid');
     $selectQuery->bindParam(':uid', $uid, PDO::PARAM_INT);
     $selectQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
     $selectQuery->execute();
     
-    $result = $selectQuery->fetch()['COUNT(' . self::$prefix . 'achievements.achievement_id)'];
+    $result = $selectQuery->fetch()['cnt'];
     
-    $selectQuery = self::$connection->prepare('SELECT COUNT(achievement_id) FROM ' . self::$prefix . 'achievements WHERE group_id = :gid');
+    $selectQuery = self::$connection->prepare('SELECT COUNT(achievement_id) as cnt FROM ' . self::$prefix . 'achievements WHERE group_id = :gid');
     $selectQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
     $selectQuery->execute();
-    $all = $selectQuery->fetch()['COUNT(achievement_id)'];
+    $all = $selectQuery->fetch()['cnt'];
     
     if($all == 0) {
       return 0;
@@ -478,7 +478,7 @@ final class UserData {
    */
   public function getAllFromGroup($id, $privileged = false) {
     
-    $privilegeCondition = self::$prefix . 'users.wtype > ' . User::$USER_TYPES['STUDENT'];
+    $privilegeCondition = 'u.wtype > ' . User::$USER_TYPES['STUDENT'];
     $else = 'u.wtype = ' . User::$USER_TYPES['STUDENT'];
     
     // you may not like SQL, but it would be a lot harder using any other tool

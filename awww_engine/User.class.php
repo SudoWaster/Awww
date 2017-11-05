@@ -55,4 +55,8 @@ class User {
   public function isAdmin() {
     return $this->type >= self::$USER_TYPES['ADMIN'];
   }
+  
+  public function getTypeDesc() {
+    return array_search($this->type, self::$USER_TYPES);
+  }
 }
