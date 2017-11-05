@@ -250,7 +250,7 @@ final class UserData {
    * @return an array of groups the user belongs to
    */
   public function getUserGroups($uid) {
-    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'groups RIGHT JOIN ' . self::$prefix . 'group_assign ON ' . self::$prefix . 'groups.group_id = ' . self::$prefix . 'group_assign.group_id WHERE ' . self::$prefix . 'group_assign.user_id = :id');
+    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'groups g RIGHT JOIN ' . self::$prefix . 'group_assign ga ON g.group_id = ga.group_id WHERE ga.user_id = :id');
     $selectQuery->bindParam(':id', $uid, PDO::PARAM_INT);
     
     $selectQuery->execute();
@@ -266,9 +266,13 @@ final class UserData {
   public function getUserAchievements($uid, $groupID = false) {
     $groupCondition = ' AND ' . self::$prefix . 'achievements.group_id = :gid';
     
-    $selectQuery = self::$connection->prepare('SELECT achievement_id, title, description FROM ' . self::$prefix . 'achievements RIGHT JOIN ' . self::$prefix . 'user_badges ON ' . self::$prefix . 'achievements.achievement_id = ' . self::$prefix . 'user_badges.achievement_id WHERE ' . self::$prefix . 'user_id = :uid ' . (!!$groupID ? $groupCondition : ''));
+    $selectQuery = self::$connection->prepare('SELECT a.achievement_id, title, description FROM ' . self::$prefix . 'achievements a RIGHT JOIN ' . self::$prefix . 'user_badges ub ON a.achievement_id = ub.achievement_id WHERE ub.user_id = :uid ' . (!!$groupID ? $groupCondition : ''));
+    
     $selectQuery->bindParam(':uid', $uid, PDO::PARAM_INT);
-    $selectQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
+    
+    if(!!$groupID) {
+      $selectQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
+    }
     
     $selectQuery->execute();
     
@@ -282,7 +286,7 @@ final class UserData {
   public function getUserProgress($uid, $groupID) {
     $result = 0;
     
-    $selectQuery = self::$connection->prepare('SELECT COUNT(' . self::$prefix . 'achievements.achievement_id) FROM ' . self::$prefix . 'achievements RIGHT JOIN ' . self::$prefix . 'user_bagdes ON ' . self::$prefix . 'achievements.achievement_id = ' . self::$prefix . 'user_badges.achievement_id WHERE ' . self::$prefix . 'user_badges.user_id = :uid AND ' . self::$prefix . 'achievements.group_id = :gid');
+    $selectQuery = self::$connection->prepare('SELECT COUNT(a.achievement_id) FROM ' . self::$prefix . 'achievements a RIGHT JOIN ' . self::$prefix . 'user_bagdes ub ON a.achievement_id = ub.achievement_id WHERE ub.user_id = :uid AND a.group_id = :gid');
     $selectQuery->bindParam(':uid', $uid, PDO::PARAM_INT);
     $selectQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
     $selectQuery->execute();
@@ -475,10 +479,10 @@ final class UserData {
   public function getAllFromGroup($id, $privileged = false) {
     
     $privilegeCondition = self::$prefix . 'users.wtype > ' . User::$USER_TYPES['STUDENT'];
-    $else = self::$prefix . 'users.wtype = ' . User::$USER_TYPES['STUDENT'];
+    $else = 'u.wtype = ' . User::$USER_TYPES['STUDENT'];
     
     // you may not like SQL, but it would be a lot harder using any other tool
-    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'group_assign LEFT JOIN ' . self::$prefix . 'users ON ' . self::$prefix . 'group_assign.user_id = ' . self::$prefix . 'users.user_id WHERE group_id = :gid AND ' . ($privileged ? $privilegeCondition : $else) . ' ORDER BY lastname ASC');
+    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'group_assign ga LEFT JOIN ' . self::$prefix . 'users u ON ga.user_id = u.user_id WHERE group_id = :gid AND ' . ($privileged ? $privilegeCondition : $else) . ' ORDER BY lastname ASC');
     
     $selectQuery->bindParam(':gid', $id, PDO::PARAM_INT);
     $selectQuery->execute();
@@ -695,7 +699,7 @@ final class UserData {
    */
   public function setPresence($groupID, $date, $userPresence) {
     foreach($userPresence as $userID => $presence) {
-      $insertQuery = self::$connection->prepare('IF EXISTS (SELECT * FROM ' . self::$prefix . 'presence WHERE group_id = :gid AND date = :date AND user_id = :uid) THEN BEGIN UPDATE ' . self::$prefix . 'presence SET presence = :present WHERE group_id = :gid AND date = :date AND user_id = :uid END ELSE BEGIN INSERT INTO ' . self::$prefix . 'presence (group_id, date, user_id, presence) VALUES(:gid, :date, :uid, :present) END');
+      $insertQuery = self::$connection->prepare('IF EXISTS (SELECT * FROM ' . self::$prefix . 'presence WHERE group_id = :gid AND date = :date AND user_id = :uid) THEN BEGIN UPDATE ' . self::$prefix . 'presence p SET presence = :present WHERE group_id = :gid AND date = :date AND user_id = :uid END ELSE BEGIN INSERT INTO p (group_id, date, user_id, presence) VALUES(:gid, :date, :uid, :present) END');
       $insertQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
       $insertQuery->bindParam(':date', $date, PDO::PARAM_STR, 10);
       $insertQuery->bindParam(':uid', $userID, PDO::PARAM_INT);
