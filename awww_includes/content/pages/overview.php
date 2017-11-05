@@ -8,6 +8,37 @@ $user   = Session::getUser();
 $groups = $userdata->getUserGroups($user->getID());
 ?>
 <link rel="stylesheet" type="text/css" href="css/overview.css" />
+<h1>Twoje grupy</h1>
+
+<?php
+$i = 0;
+foreach ($groups as $group) {
+  $i++;
+  
+  $progress = $userdata->getUserProgress($user->getID(), $group['group_id']);
+  
+  if($i == 1) {?> <div class="row"> <?php } ?>
+  
+  <div class="col-12 col-md-4 overview-group-block">
+    
+    <?php if(!$user->isPrivileged()) { ?>
+    <div class="user-progress">
+      <div class="alert <?php echo UserData::getAlertClass($progress); ?>">
+        <?php echo round(100 * $progress); ?>%
+      </div>
+    </div>
+    <?php } ?>
+    
+    <div class="overview-group-name">
+      <a role="button" class="btn btn-outline-primary no-refresh" data-ref="group?id=<?php echo $group['group_id']; ?>" href="#"><?php echo $group['group_name']; ?></a>
+    </div>
+  </div>
+  
+  <?php if($i == 3) { $i = 0; ?> </div> <?php }
+}
+
+if($i != 0) { ?> </div> <?php }
+?>
 
 <h1>Najnowsze wpisy z grup</h1>
 

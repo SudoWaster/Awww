@@ -1,3 +1,13 @@
+.overview-group-block {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.overview-group-name {
+  padding-top: 1rem;
+  text-align: center;
+}
+
 /**
  * Posts
  *

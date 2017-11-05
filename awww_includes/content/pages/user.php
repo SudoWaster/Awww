@@ -8,22 +8,6 @@ $user         = $userdata->getUserByID($userID);
 $groups       = $userdata->getUserGroups($userID);
 $achievements = $userdata->getUserAchievements($userID);
 
-
-function getAlertClass($progress) {
-  if ($progress >= 0.75) { 
-    return "alert-success"; 
-  } 
-  else if ($progress >= 0.5) { 
-    return "alert-info"; 
-  } 
-  else if ($progress >= 0.25) { 
-    return "alert-dark"; 
-  }
-  else { 
-    return "alert-light"; 
-  } 
-}
-
 ?>
 
 <h1><?php echo $user->getFullName(); ?></h1>
@@ -66,7 +50,7 @@ function getAlertClass($progress) {
           <?php if (!$user->isPrivileged()) { ?>
           
           <div class="col-12 col-md-3 user-progress">
-            <div class="alert <?php echo getAlertClass($progress); ?>">
+            <div class="alert <?php echo UserData::getAlertClass($progress); ?>">
               <?php echo round(100 * $progress); ?>%
             </div>
           </div>

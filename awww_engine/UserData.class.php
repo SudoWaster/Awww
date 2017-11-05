@@ -743,4 +743,24 @@ final class UserData {
     $removeQuery->bindParam(':date', $date, PDO::PARAM_STR, 10);
     $removeQuery->execute();
   }
+  
+  
+  /**
+   * Get achievement classes
+   *
+   */
+  public static function getAlertClass($progress) {
+    if ($progress >= 0.75) { 
+      return "alert-success"; 
+    } 
+    else if ($progress >= 0.5) { 
+      return "alert-info"; 
+    } 
+    else if ($progress >= 0.25) { 
+      return "alert-dark"; 
+    }
+    else { 
+      return "alert-light"; 
+    } 
+  }
 }
