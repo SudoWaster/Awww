@@ -8,6 +8,7 @@
 }
 
 .group-desc {
+  white-space: pre-wrap;
   color: #666;
 }
 
@@ -16,6 +17,10 @@
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
   background: #eee;
+}
+
+.hidden {
+  display: none;
 }
 
 /**

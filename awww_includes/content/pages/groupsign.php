@@ -30,7 +30,8 @@ $group_count = count($groups);
       <h5><?php echo $group['group_name']; ?></h5>
       <a class="signin-link no-refresh" data-ref="signin?g=<?php echo $group['group_id']; ?>" href="#">Zapisz się</a>
     </div>
-    <span class="group-desc"><?php echo $group['group_desc']; ?></span>
+    <div class="group-vacancies">Wolne miejsca: <?php echo $group['vacancies']; ?></div>
+    <div class="group-desc"><?php echo $group['group_desc']; ?></div>
   </div>
   
   <?php

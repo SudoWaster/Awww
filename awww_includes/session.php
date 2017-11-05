@@ -7,12 +7,16 @@ $conf = Config::Instance();
 
 if(!Session::isLogged()) {
   header('location: ' . $conf->get()['HOST']['ADDRESS'] . 'awww-login.php?error');
+  die();
+  return;
 }
 
 
 if(isset($PRIVILEGED) && $PRIVILEGED) {
   if(!Session::getUser()->isPrivileged()) {
     print '<h2>Nie masz dostępu do strony!</h2>';
+    die();
+    return;
   }
 }
 

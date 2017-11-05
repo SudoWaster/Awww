@@ -24,7 +24,7 @@ $groups = $userdata->getUserGroups($userID);
               <?php 
               if (Session::getUser()->isPrivileged()) { ?>
               <li class="nav-item">
-                <a class="nav-link no-refresh" data-ref="managegroups" href="#!managegroups">Zarządzanie</a>
+                <a class="nav-link no-refresh" data-ref="addgroup" href="#!addgroup">Stwórz</a>
               </li>
               <?php } ?>
               

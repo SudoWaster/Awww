@@ -22,6 +22,7 @@ $config = Config::Instance();
 
     <!-- Custom styles for this template -->
     <link href="css/main.css" rel="stylesheet">
+    <script src="js/jquery-3.2.1.min.js"></script>
   </head>
   
   <body>
