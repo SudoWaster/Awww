@@ -264,7 +264,7 @@ final class UserData {
    *
    */
   public function getUserAchievements($uid, $groupID = false) {
-    $groupCondition = ' AND ' . self::$prefix . 'achievements.group_id = :gid';
+    $groupCondition = ' AND a.group_id = :gid';
     
     $selectQuery = self::$connection->prepare('SELECT a.achievement_id, title, description FROM ' . self::$prefix . 'achievements a RIGHT JOIN ' . self::$prefix . 'user_badges ub ON a.achievement_id = ub.achievement_id WHERE ub.user_id = :uid ' . (!!$groupID ? $groupCondition : ''));
     
@@ -662,7 +662,7 @@ final class UserData {
    *
    */
   public function getPosts($groupID) {
-    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'group_posts WHERE group_id = :gid ORDER BY date DESC');
+    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'group_posts WHERE group_id = :gid ORDER BY date DESC, post_id DESC');
     $selectQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
     $selectQuery->execute();
     
@@ -675,7 +675,7 @@ final class UserData {
    *
    */
   public function getNewestPost($groupID) {
-    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'group_posts WHERE group_id = :gid ORDER BY date DESC LIMIT 1');
+    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'group_posts WHERE group_id = :gid ORDER BY date DESC, post_id DESC LIMIT 1');
     $selectQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
     $selectQuery->execute();
     

@@ -35,11 +35,11 @@ if (!$userdata->isInGroup($userID, $groupID) && !Session::getUser()->isAdmin()) 
       </li>
 
       <li>
-        <a role="button" class="btn btn-outline-primary scroll-to" data-ref="" href="#">Osiągnięcia</a>
-      </li>
-
-      <li>
         <a role="button" class="btn btn-outline-primary scroll-to" data-ref="" href="#">Obecność</a>
+      </li>
+      
+      <li>
+        <a role="button" class="btn btn-outline-primary scroll-to" data-ref="achievements" href="#">Osiągnięcia</a>
       </li>
       
       <?php
@@ -177,6 +177,44 @@ if (Session::getUser()->isPrivileged()) { ?>
     <?php } ?>
   </div>
   <?php } ?>
+</section>
+
+
+<h2>Osiągnięcia</h2>
+
+<section id="achievements">
+
+<?php
+$achievements = $userdata->getGroupAchievements($groupID);
+$userBadges   = array();
+if(!Session::getUser()->isPrivileged()) {
+  $userBadges = $userdata->getUserAchievements($userID, $groupID);
+}
+
+$i = 0;
+
+foreach ($achievements as $achievement) {
+  $i++;
+  
+  if ($i == 1) { ?> <div class="row"> <?php } 
+  
+  $alertClass = in_array ($achievement['achievement_id'], array_column($userBadges, 'achievement_id')) ? 'alert-success' : 'alert-light';
+  ?>
+  
+    <div class="col-4">
+      <div class="alert <?php echo $alertClass; ?>">
+        <h5><?php echo $achievement['title']; ?></h5>
+        <p><?php echo $achievement['description']; ?></p>
+      </div>
+    </div>
+  
+  <?php
+  if ($i == 3) { $i = 0; ?> </div> <?php }
+}
+  
+if ($i != 0) { ?> </div> <?php } ?>
+  
+
 </section>
 
 <script src="js/tinymce/tinymce.min.js"></script>
