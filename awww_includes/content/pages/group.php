@@ -185,8 +185,17 @@ if (Session::getUser()->isPrivileged()) { ?>
 <?php 
 if (Session::getUser()->isPrivileged()) {?>
 
-<a role="button" class="btn btn-outline-primary" href="#">Dodaj</a> 
-  
+<a role="button" class="btn btn-outline-primary add-achievement-button" href="#">Dodaj</a> 
+
+<div class="new-achievement hidden">
+  <form id="achievement-add-form" method="post">
+    <input type="hidden" class="group-id" value="<?php echo $groupID; ?>" />
+    <input type="text" class="form-control achievement-title" />
+    <textarea class="form-control achievement-desc"></textarea>
+    <input type="submit" class="btn btn-outline-primary" value="Zapisz" />
+  </form>
+</div>
+
 <?php } ?>
 
 <section id="achievements">
@@ -215,7 +224,7 @@ foreach ($achievements as $achievement) {
         <?php 
         if (Session::getUser()->isPrivileged()) {?>
 
-        <a role="button" class="btn btn-outline-primary" href="#">Edytuj</a> 
+        <a role="button" class="btn btn-outline-primary no-refresh" data-ref="achievementassign?id=<?php echo $achievement['achievement_id']; ?>&gid=<?php echo $groupID; ?>" href="#">Edytuj przydział</a> 
         <a role="button" class="btn btn-outline-danger no-refresh-confirm" data-msg="Czy na pewno chcesz usunąć to osiągnięcie?" data-ref="removeachievement?id=<?php echo $achievement['achievement_id']; ?>" href="#">Usuń</a> 
 
         <?php } ?>

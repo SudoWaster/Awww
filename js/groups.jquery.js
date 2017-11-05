@@ -1,3 +1,37 @@
+/*
+ * ACHIEVEMENTS
+ *
+ */
+
+var addAchievementAction = function($elem, e) {
+  e.preventDefault();
+  
+  $('.new-achievement').toggleClass('hidden');
+  $elem.toggleClass('hidden');
+};
+
+var saveAchievementAction = function(e) {
+  e.preventDefault();
+  
+  var form = '#achievement-add-form';
+  
+  var g_id    = $(form + ' .group-id').val();
+  var a_name  = $(form + ' .achievement-title').val();
+  var a_desc  = $(form + ' .achievement-desc').val();
+  
+  $.post('awww_includes/content/pages/saveachievement.php', 
+         { gid: g_id, title: a_name, desc: a_desc },
+        function() {
+          location.reload();
+        });
+  
+  return false;
+};
+
+/*
+ * POSTS
+ *
+ */
 var editGroupAction = function($elem, e) {
   e.preventDefault();
   
@@ -88,8 +122,9 @@ var bindButtons = function() {
   $('.new-button').click(function(e) { newAction($(this), e); });
   $('.edit-button').click(function(e) { editAction($(this), e); });
   
-  
   $('.edit-group-button').click(function(e) { editGroupAction($(this), e); });
+  
+  $('.add-achievement-button').click(function(e) { addAchievementAction($(this), e); });
 };
 
 $(document).ready(function() {
@@ -104,4 +139,5 @@ $(document).ready(function() {
   
   $('#group-edit-form').submit(function(e) { saveGroupAction(e); });
   $('#group-add-form').submit(function(e) { addGroupAction(e); });
+  $('#achievement-add-form').submit(function(e) { saveAchievementAction(e); });
 });
