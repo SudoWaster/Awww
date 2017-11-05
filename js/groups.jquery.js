@@ -95,8 +95,8 @@ var bindButtons = function() {
 $(document).ready(function() {
   tinymce.init({ 
     selector: '.post-content-area',
-    plugins: 'save link',
-    toolbar: 'save | undo redo | fontselect fontsizeselect | link',
+    plugins: 'save link image',
+    toolbar: 'save | undo redo | fontselect fontsizeselect | bold italic underine | link image',
     save_onsavecallback: function(editor) { saveAction(editor); }
   });
   
