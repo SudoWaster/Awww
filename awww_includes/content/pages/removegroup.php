@@ -14,7 +14,7 @@ $user     = Session::getUser();
 <h1>Usuwanie grupy</h1>
 
 <?php
-if (!($user->isPrivileged() && $userdata->isInGroup($user->getID(), $groupID)) || !$user->isPrivileged()) { 
+if (!($user->isPrivileged() && $userdata->isInGroup($user->getID(), $groupID)) && !$user->isAdmin()) { 
 ?>
   
   <h2 class="ginfo">Nie można usunąć, brak uprawnień</h2>

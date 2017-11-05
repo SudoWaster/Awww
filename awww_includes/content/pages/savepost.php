@@ -10,6 +10,10 @@ $post     = $_POST['post'];
 $group_id = $_POST['gid'];
 $op_mail  = Session::getUser()->getMail();
 
+if (!Session::getUser()->isPrivileged()) {
+  return;
+}
+
 if($post_id == 'new') {
   $userdata->addPost($op_mail, $group_id, $post);
 } else {

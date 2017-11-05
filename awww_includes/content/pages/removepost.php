@@ -16,7 +16,7 @@ $post     = $userdata->getPost($postID);
 <h1>Usuwanie posta</h1>
   
 <?php
-if (!($user->isPrivileged() && $userdata->isInGroup($user->getID(), $groupID)) || !$user->isAdmin()) { 
+if (!($user->isPrivileged() && $userdata->isInGroup($user->getID(), $groupID)) && !$user->isAdmin()) { 
 ?>
   <h2 class="ginfo">Nie można usunąć, brak uprawnień</h2>
   <a role="button" class="btn btn-outline-primary" href="apanel">Powrót</a>

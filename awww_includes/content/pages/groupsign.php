@@ -19,7 +19,7 @@ $group_count = count($groups);
   foreach ($groups as $group) {
     
     // if user already in group, skip
-    if($userdata->isInGroup($userID, $group['group_id']) || $group['vacancies'] <= 0) {
+    if($userdata->isInGroup($userID, $group['group_id']) || ($group['vacancies'] <= 0 && !Session::getUser()->isAdmin())) {
       $group_count--;
       continue;
     }

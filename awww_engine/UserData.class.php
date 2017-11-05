@@ -562,8 +562,8 @@ final class UserData {
    *
    */
   public function getAchievement($id) {
-    $selectQuery = self::$connection->prepare('SELECT title, description FROM ' . self::$prefix . 'achievements WHERE achievement_id = :aid');
-    $selectQuery->bindParam(':aid', $id, PDO::PARAM_ID);
+    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'achievements WHERE achievement_id = :aid');
+    $selectQuery->bindParam(':aid', $id, PDO::PARAM_INT);
     $selectQuery->execute();
     
     return $selectQuery->fetch();
