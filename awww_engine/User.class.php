@@ -14,12 +14,14 @@ class User {
   private $mail;
   private $type;
   private $name;
+  private $lastname;
   
-  public function __construct($id, $mail, $type, $name) {
-    $this->id    = $id;
-    $this->mail  = $mail;
-    $this->type  = $type;
-    $this->name  = $name;
+  public function __construct($id, $mail, $type, $name, $lastname) {
+    $this->id       = $id;
+    $this->mail     = $mail;
+    $this->type     = $type;
+    $this->name     = $name;
+    $this->lastname = $lastname;
   }
   
   public function getMail() {
@@ -32,6 +34,14 @@ class User {
   
   public function getName() {
     return $this->name;
+  }
+  
+  public function getLastName() {
+    return $this->lastname;
+  }
+  
+  public function getFullName() {
+    return $this->name . ' ' . $this->lastname;
   }
   
   public function canLogin() {

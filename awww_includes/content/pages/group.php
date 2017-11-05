@@ -108,7 +108,7 @@ if (!$userdata->isInGroup($userID, $groupID) && !Session::getUser()->isAdmin()) 
       ?>
 
       <li class="nav-item">
-        <a class="nav-link no-refresh" data-ref="user?id=<?php echo $user->getID(); ?>" href="#"><?php echo $user->getName(); ?></a>
+        <a class="nav-link no-refresh" data-ref="user?id=<?php echo $user->getID(); ?>" href="#"><?php echo $user->getFullName(); ?></a>
       </li>
 
       <?php

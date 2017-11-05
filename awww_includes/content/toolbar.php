@@ -55,7 +55,7 @@ $groups = $userdata->getUserGroups($userID);
               </li>
               
               <li class="nav-item">
-                <a class="nav-link no-refresh" data-ref="" href="#">Podgląd</a>
+                <a class="nav-link no-refresh" data-ref="user?id=<?php echo Session::getUser()->getID(); ?>" href="#">Podgląd</a>
               </li>
               
               <li class="nav-item">

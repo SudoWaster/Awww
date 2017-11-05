@@ -113,7 +113,7 @@ final class UserData {
    * @return user from database
    */
   public function getUserByID($id) {
-    $userQuery = self::$connection->prepare('SELECT user_id, mail, wtype, name FROM ' . self::$prefix . 'users WHERE user_id=:uid');
+    $userQuery = self::$connection->prepare('SELECT user_id, mail, wtype, name, lastname FROM ' . self::$prefix . 'users WHERE user_id=:uid');
     
     $userQuery->bindParam(':uid', $id, PDO::PARAM_INT);
     $userQuery->execute();
@@ -123,7 +123,7 @@ final class UserData {
     }
     
     $result = $userQuery->fetch();
-    return new User($result['user_id'], $result['mail'], $result['wtype'], $result['name']);
+    return new User($result['user_id'], $result['mail'], $result['wtype'], $result['name'], $result['lastname']);
   }
   
   
@@ -132,7 +132,7 @@ final class UserData {
    * @return user from database
    */
   public function getUser($mail) {
-    $userQuery = self::$connection->prepare('SELECT user_id, mail, wtype, name FROM ' . self::$prefix . 'users WHERE mail=:login');
+    $userQuery = self::$connection->prepare('SELECT user_id, mail, wtype, name, lastname FROM ' . self::$prefix . 'users WHERE mail=:login');
     
     $userQuery->bindParam(':login', $mail, PDO::PARAM_STR, 64);
     $userQuery->execute();
@@ -142,7 +142,7 @@ final class UserData {
     }
     
     $result = $userQuery->fetch();
-    return new User($result['user_id'], $result['mail'], $result['wtype'], $result['name']);
+    return new User($result['user_id'], $result['mail'], $result['wtype'], $result['name'], $result['lastname']);
   }
   
   
@@ -478,7 +478,7 @@ final class UserData {
     $else = self::$prefix . 'users.wtype = ' . User::$USER_TYPES['STUDENT'];
     
     // you may not like SQL, but it would be a lot harder using any other tool
-    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'group_assign LEFT JOIN ' . self::$prefix . 'users ON ' . self::$prefix . 'group_assign.user_id = ' . self::$prefix . 'users.user_id WHERE group_id = :gid AND ' . ($privileged ? $privilegeCondition : $else) . ' ORDER BY name ASC');
+    $selectQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'group_assign LEFT JOIN ' . self::$prefix . 'users ON ' . self::$prefix . 'group_assign.user_id = ' . self::$prefix . 'users.user_id WHERE group_id = :gid AND ' . ($privileged ? $privilegeCondition : $else) . ' ORDER BY lastname ASC');
     
     $selectQuery->bindParam(':gid', $id, PDO::PARAM_INT);
     $selectQuery->execute();
@@ -488,7 +488,7 @@ final class UserData {
     
     foreach($data as $row) {
       
-      $user = new User($row['user_id'], $row['mail'], $row['wtype'], $row['name']);
+      $user = new User($row['user_id'], $row['mail'], $row['wtype'], $row['name'], $row['lastname']);
       
       array_push($result, $user);
     }
