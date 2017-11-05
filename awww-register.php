@@ -34,19 +34,32 @@ if(Session::isLogged()) {
 
       <form method="post" class="form-signin">
         <?php if(isset($_GET['error'])) { ?>
-        <h4 class="error">Niepoprawne logowanie</h4>
+        <h4 class="error">Złe dane</h4>
         <?php } else {?>
         <h4 class="error">Rejestracja</h4>
         <?php } ?>
         
-        <label for="inputEmail" class="sr-only">Email</label>
-        <input type="email" id="inputEmail" class="form-control" placeholder="Email" required autofocus>
-        <label for="inputEmail2" class="sr-only">Potwierdź email</label>
-        <input type="email" id="inputEmail2" class="form-control" placeholder="Potwierdź email" required autofocus>
-        <label for="inputName" class="sr-only">Imię i nazwisko</label>
-        <input type="text" id="inputName" class="form-control" placeholder="Imię i nazwisko" required autofocus>
-        <label for="inputPassword" class="sr-only">Hasło</label>
-        <input type="password" id="inputPassword" class="form-control" placeholder="Hasło" required>
+        <div class="form-group">
+          <label for="inputEmail" class="sr-only">Email</label>
+          <input type="email" id="inputEmail" class="form-control" placeholder="Email" required autofocus>
+
+          <label for="inputEmail2" class="sr-only">Potwierdź email</label>
+          <input type="email" id="inputEmail2" class="form-control" placeholder="Potwierdź email" required autofocus>
+
+          <div class="invalid-feedback">Adresy się nie zgadzają lub są zajęte</div>
+        </div>
+        
+        <div class="form-group">
+         <label for="inputName" class="sr-only">Imię i nazwisko</label>
+          <input type="text" id="inputName" class="form-control" placeholder="Imię i nazwisko" required autofocus>
+
+          <label for="inputPassword" class="sr-only">Hasło</label>
+          <input type="password" id="inputPassword" class="form-control" placeholder="Hasło" required> 
+          
+          <div class="invalid-feedback">Hasło zbyt krótkie</div>      
+        </div>
+
+        
         <button class="btn btn-lg btn-outline-dark btn-block" type="submit" id="signin-button">Zarejestruj</button>
       
         <span class="awww-version">AWWW v. <?php echo parse_ini_file('awww_engine/awwwconfig.ini', true)['VERSION']; ?></span>
@@ -58,6 +71,6 @@ if(Session::isLogged()) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
     
-    <script src="js/login.jquery.js"></script>
+    <script src="js/register.jquery.js"></script>
   </body>
 </html>

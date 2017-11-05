@@ -65,6 +65,13 @@ body {
   border-top-right-radius: 0;
 }
 
+.form-signin #inputEmail2, #inputName {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
 .awww-version {
   margin-top: 24px;
   font-size: 10px;

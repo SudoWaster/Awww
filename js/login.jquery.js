@@ -15,5 +15,7 @@ $(document).ready(function() {
     posting.done(function(data) {
       window.location.href = 'apanel';
     });
+    
+    return false;
   });
 });
