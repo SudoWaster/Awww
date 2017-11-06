@@ -222,10 +222,10 @@ if (Session::getUser()->isPrivileged()) {
             <th>Osiągnięcia</th>
             <th>Obecność</th>
             <th>Opcje</th>
+            <th>Dzisiaj</th>
             <?php foreach ($days as $day) { ?>
             <th><?php echo $day['date']; ?> <a class="btn btn-outline-danger btn-sm no-refresh-confirm-reload" data-msg="Wykasować obecność dla dnia <?php echo $day['date']; ?>?" data-ref="delday?gid=<?php echo $groupID; ?>&day=<?php echo $day['date']; ?>" href="#">X</a></th>
             <?php } ?>
-            <th>Dzisiaj</th>
           </tr>
         </thead>
         
@@ -246,25 +246,25 @@ if (Session::getUser()->isPrivileged()) {
             </td>
             
             <td>
-              <span class="badge badge-<?php echo UserData::getBadgeClass($member_presence); ?>"><?php echo round(100 * $presence); ?>%</span> 
+              <span class="badge badge-<?php echo UserData::getBadgeClass($member_presence); ?>"><?php echo round(100 * $member_presence); ?>%</span> 
             </td>
 
             <td>
               <a class="btn btn-outline-danger btn-sm no-refresh-confirm-reload" data-msg="Czy na pewno chcesz usunąć <?php echo $member->getFullName(); ?> z grupy?" data-ref="kick?uid=<?php echo $member->getID(); ?>&gid=<?php echo $groupID; ?>" href="#">Usuń z grupy</a>
             </td>
             
+            <td>
+              <input type="checkbox" class="presence-check" data-date="<?php echo date('o-m-d'); ?>" data-group="<?php echo $groupID; ?>" data-user="<?php echo $member->getID(); ?>" <?php if (date('o-m-d') == $days[0]['date']) echo 'disabled'; ?>/> 
+            </td>
+            
             <?php 
             foreach ($days as $day) { ?>
             
             <td>
-              <input type="checkbox" class="presence-check" data-date="<?php echo $day['date']; ?>" data-user="<?php echo $member->getID(); ?>" <?php echo $userdata->wasPresent($member->getID(), $groupID, $day['date']) ? 'checked' : ''; ?> />
+              <input type="checkbox" class="presence-check" data-date="<?php echo $day['date']; ?>" data-group="<?php echo $groupID; ?>" data-user="<?php echo $member->getID(); ?>" <?php echo $userdata->wasPresent($member->getID(), $groupID, $day['date']) ? 'checked' : ''; ?> />
             </td>
             
             <?php } ?>
-            
-            <td>
-              <input type="checkbox" class="presence-check" data-date="<?php echo date('o-m-d'); ?>" data-user="<?php echo $member->getID(); ?>"/> 
-            </td>
           </tr>
         <?php } ?>
         </tbody>

@@ -68,6 +68,17 @@ var norefreshConfirmReloadAction = function($elem, event) {
   }
 }
 
+var setCheckboxPresence = function($elem) {
+  var groupID = $elem.data('group');
+  var userID  = $elem.data('user');
+  var date    = $elem.data('date');
+  var checked = $elem.is(':checked') ? 1 : 0;
+  
+  $.post ( 'awww_includes/content/pages/setpresence.php', 
+          { gid: groupID, day: date, uid: userID, present: checked},
+         function(data) { console.log(data); });
+}
+
 var scrollTo = function($elem, event) {
   event.preventDefault();
   
@@ -84,6 +95,7 @@ var linkBind = function() {
   
   $('.no-refresh-confirm-reload').click(function(e) { norefreshConfirmReloadAction($(this), e) } );
   
+  $('.presence-check').change(function(e) { setCheckboxPresence($(this)); });
   
   $('.scroll-to').click(function(e) { scrollTo($(this), e) } );
 }

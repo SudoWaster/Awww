@@ -697,15 +697,25 @@ final class UserData {
    * Add/update presence
    *
    */
-  public function setPresence($groupID, $date, $userPresence) {
-    foreach($userPresence as $userID => $presence) {
-      $insertQuery = self::$connection->prepare('IF EXISTS (SELECT * FROM ' . self::$prefix . 'presence WHERE group_id = :gid AND date = :date AND user_id = :uid) THEN BEGIN UPDATE ' . self::$prefix . 'presence p SET presence = :present WHERE group_id = :gid AND date = :date AND user_id = :uid END ELSE BEGIN INSERT INTO p (group_id, date, user_id, presence) VALUES(:gid, :date, :uid, :present) END');
-      $insertQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
-      $insertQuery->bindParam(':date', $date, PDO::PARAM_STR, 10);
-      $insertQuery->bindParam(':uid', $userID, PDO::PARAM_INT);
-      $insertQuery->bindParam(':present', $presence, PDO::PARAM_INT);
-      $insertQuery->execute();
+  public function setPresence($userID, $groupID, $date, $presence) {
+    $checkQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'presence WHERE group_id = :gid AND date = :date AND user_id = :uid');
+    $checkQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
+    $checkQuery->bindParam(':date', $date, PDO::PARAM_STR, 10);
+    $checkQuery->bindParam(':uid', $userID, PDO::PARAM_INT);
+    $checkQuery->execute();
+    
+    $query = 'INSERT INTO ' . self::$prefix . 'presence (group_id, date, user_id, presence) VALUES(:gid, :date, :uid, :present)';
+    
+    if($checkQuery->rowCount() > 0) {
+      $query = 'UPDATE ' . self::$prefix . 'presence SET presence = :present WHERE group_id = :gid AND date = :date AND user_id = :uid';
     }
+    
+    $insertQuery = self::$connection->prepare($query);
+    $insertQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
+    $insertQuery->bindParam(':date', $date, PDO::PARAM_STR, 10);
+    $insertQuery->bindParam(':uid', $userID, PDO::PARAM_INT);
+    $insertQuery->bindParam(':present', $presence, PDO::PARAM_INT);
+    $insertQuery->execute();
   }
   
   /**
@@ -758,16 +768,18 @@ final class UserData {
     $selectQuery->bindParam(':uid', $userID, PDO::PARAM_INT);
     $selectQuery->execute();
     
-    $days = $selectQuery->fetch()['cnt'];
+    $alldays = $selectQuery->fetch()['cnt'];
     
-    if ($days == 0) return 0;
+    if ($alldays < 1) return 0;
     
     $selectQuery = self::$connection->prepare('SELECT COUNT(presence) as cnt FROM ' . self::$prefix . 'presence WHERE group_id = :gid AND user_id = :uid AND presence = 1');
     $selectQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
     $selectQuery->bindParam(':uid', $userID, PDO::PARAM_INT);
     $selectQuery->execute();
     
-    return $selectQuery->fetch()['cnt'] / $days;
+    $present = $selectQuery->fetch()['cnt'];
+    
+    return $present / $alldays;
   }
   
   
