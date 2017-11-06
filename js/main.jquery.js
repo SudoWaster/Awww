@@ -79,6 +79,23 @@ var setCheckboxPresence = function($elem) {
          function(data) { console.log(data); });
 }
 
+
+var updateAccount = function ($elem, e) {
+  e.preventDefault();
+  
+  var uname   = $elem.find('#inputName').val();
+  var ulname  = $elem.find('#inputLastName').val();
+  var umail   = $elem.find('#inputMail').val();
+  var upass   = $elem.find('#inputPassword').val();
+  var unpass  = $elem.find('#inputNewPassword').val();  
+  
+  $.post('awww_includes/content/pages/updateprofile.php', 
+         { name: uname, lname: ulname, mail: umail, npass: unpass, pass: upass }, 
+         function(data) { location.reload();  });
+  
+  return false;
+}
+
 var scrollTo = function($elem, event) {
   event.preventDefault();
   
@@ -98,6 +115,8 @@ var linkBind = function() {
   $('.presence-check').change(function(e) { setCheckboxPresence($(this)); });
   
   $('.scroll-to').click(function(e) { scrollTo($(this), e) } );
+  
+  $('#account-form').submit(function(e) { updateAccount($(this), e); return false; });
 }
 
 $(document).ready(function() {

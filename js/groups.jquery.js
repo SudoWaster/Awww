@@ -137,7 +137,7 @@ $(document).ready(function() {
   
   bindButtons();
   
-  $('#group-edit-form').submit(function(e) { saveGroupAction(e); });
-  $('#group-add-form').submit(function(e) { addGroupAction(e); });
-  $('#achievement-add-form').submit(function(e) { saveAchievementAction(e); });
+  $('#group-edit-form').submit(function(e) { saveGroupAction(e); return false; });
+  $('#group-add-form').submit(function(e) { addGroupAction(e); return false; });
+  $('#achievement-add-form').submit(function(e) { saveAchievementAction(e); return false; });
 });

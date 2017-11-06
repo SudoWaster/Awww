@@ -126,7 +126,7 @@ input {
   list-style: none;
 }
 
-.group-desc {
+.group-desc, .helper-text {
   color: #999;
   font-size: 0.7rem;
 }
@@ -144,4 +144,12 @@ input {
   width: 5rem;
   max-width: 100%;
   margin: 0 auto;
+}
+
+/*
+ * ACCOUNT SETTINGS
+ *
+ */
+#account-form .form-control {
+  width: auto;
 }
