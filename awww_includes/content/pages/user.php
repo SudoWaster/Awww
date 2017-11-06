@@ -50,7 +50,7 @@ $achievements = $userdata->getUserAchievements($userID);
           <?php if (!$user->isPrivileged()) { ?>
           
           <div class="col-12 col-md-3 user-progress">
-            <div class="alert <?php echo UserData::getAlertClass($progress); ?>">
+            <div class="alert alert-<?php echo UserData::getAlertClass($progress); ?>">
               <?php echo round(100 * $progress); ?>%
             </div>
           </div>

@@ -63,7 +63,7 @@ if (!$userdata->isInGroup($userID, $groupID) && !Session::getUser()->isAdmin()) 
   <div class="col-12 group-info">
     <?php
     if(!Session::getUser()->isPrivileged()) { ?>
-    <div class="alert alert-light">Obecność: <span class="badge <?php echo UserData::getBadgeClass($presence); ?>"><?php echo round(100 * $presence); ?>%</span></div>
+    <div class="alert alert-light">Obecność: <span class="badge badge<?php echo UserData::getBadgeClass($presence); ?>"><?php echo round(100 * $presence); ?>%</span></div>
     <?php } ?>
     
     <div class="group-vacancies">Wolne miejsca: <?php echo $group['vacancies']; ?></div>
@@ -206,16 +206,75 @@ if (Session::getUser()->isPrivileged()) { ?>
 <!-- PRESENCE -->
 
 <?php
-if (Session::getUser()->isPrivileged()) { ?>
+if (Session::getUser()->isPrivileged()) { 
+  $days = $userdata->getDays($groupID);
+  $group_members = $userdata->getAllFromGroup($groupID, false);
+?>
 <section id="presence" class="row">
   <div class="col-12 separated bg-light">
     <h2>Obecność</h2>
     
-    
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Użytkownik</th>
+            <th>Osiągnięcia</th>
+            <th>Obecność</th>
+            <th>Opcje</th>
+            <?php foreach ($days as $day) { ?>
+            <th><?php echo $day['date']; ?> <a class="btn btn-outline-danger btn-sm no-refresh-confirm-reload" data-msg="Wykasować obecność dla dnia <?php echo $day['date']; ?>?" data-ref="delday?gid=<?php echo $groupID; ?>&day=<?php echo $day['date']; ?>" href="#">X</a></th>
+            <?php } ?>
+            <th>Dzisiaj</th>
+          </tr>
+        </thead>
+        
+        <tbody>
+        <?php 
+        foreach ($group_members as $member) {
+          $member_presence  = $userdata->getUserPresence($member->getID(), $groupID);
+          $member_progress  = $userdata->getUserProgress($member->getID(), $groupID);
+
+        ?>
+          <tr>
+            <td>
+              <a class="no-refresh" data-ref="user?id=<?php echo $member->getID(); ?>" href="#"><?php echo $member->getFullName(); ?></a> 
+            </td>
+
+            <td>
+              <span class="badge badge-<?php echo UserData::getAlertClass($member_progress); ?>"><?php echo round(100 * $member_progress); ?>%</span>
+            </td>
+            
+            <td>
+              <span class="badge badge-<?php echo UserData::getBadgeClass($member_presence); ?>"><?php echo round(100 * $presence); ?>%</span> 
+            </td>
+
+            <td>
+              <a class="btn btn-outline-danger btn-sm no-refresh-confirm-reload" data-msg="Czy na pewno chcesz usunąć <?php echo $member->getFullName(); ?> z grupy?" data-ref="kick?uid=<?php echo $member->getID(); ?>&gid=<?php echo $groupID; ?>" href="#">Usuń z grupy</a>
+            </td>
+            
+            <?php 
+            foreach ($days as $day) { ?>
+            
+            <td>
+              <input type="checkbox" class="presence-check" data-date="<?php echo $day['date']; ?>" data-user="<?php echo $member->getID(); ?>" <?php echo $userdata->wasPresent($member->getID(), $groupID, $day['date']) ? 'checked' : ''; ?> />
+            </td>
+            
+            <?php } ?>
+            
+            <td>
+              <input type="checkbox" class="presence-check" data-date="<?php echo date('o-m-d'); ?>" data-user="<?php echo $member->getID(); ?>"/> 
+            </td>
+          </tr>
+        <?php } ?>
+        </tbody>
+      </table>
+    </div>
   </div>
 
 </section>
 <?php } ?>
+
 
 
 

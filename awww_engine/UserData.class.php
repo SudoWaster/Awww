@@ -712,7 +712,7 @@ final class UserData {
    * @return array of days of workshops in group
    */
   public function getDays($groupID) {
-    $selectQuery = self::$connection->prepare('SELECT DISTINCT days FROM ' . self::$prefix . 'presence WHERE group_id = :gid');
+    $selectQuery = self::$connection->prepare('SELECT date, COUNT(date) FROM ' . self::$prefix . 'presence WHERE group_id = :gid GROUP BY group_id, date ORDER BY date DESC');
     $selectQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
     $selectQuery->execute();
     
@@ -734,7 +734,23 @@ final class UserData {
   
   
   /**
-   * @return presence of a particular day
+   * @return presence of user in a particular day
+   */
+  public function wasPresent($userID, $groupID, $date) {
+    $selectQuery = self::$connection->prepare('SELECT presence FROM ' . self::$prefix . 'presence WHERE group_id = :gid AND user_id = :uid AND date = :date');
+    $selectQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
+    $selectQuery->bindParam(':uid', $userID, PDO::PARAM_INT);
+    $selectQuery->bindParam(':date', $date, PDO::PARAM_STR, 10);
+    $selectQuery->execute();
+    
+    $result = $selectQuery->fetch();
+    
+    return $selectQuery->rowCount() > 0 && $result['presence'] != 0;
+  }
+  
+  
+  /**
+   * @return presence of a particular user
    */
   public function getUserPresence($userID, $groupID) {
     $selectQuery = self::$connection->prepare('SELECT COUNT(presence) as cnt FROM ' . self::$prefix . 'presence WHERE group_id = :gid AND user_id = :uid');
@@ -773,16 +789,16 @@ final class UserData {
    */
   public static function getAlertClass($progress) {
     if ($progress >= 0.75) { 
-      return 'alert-success'; 
+      return 'success'; 
     } 
     else if ($progress >= 0.5) { 
-      return 'alert-info'; 
+      return 'info'; 
     } 
     else if ($progress >= 0.25) { 
-      return 'alert-dark'; 
+      return 'dark'; 
     }
     else { 
-      return 'alert-light'; 
+      return 'light'; 
     } 
   }
   
@@ -793,16 +809,16 @@ final class UserData {
    */
   public static function getBadgeClass($progress) {
     if ($progress >= 0.75) { 
-      return 'alert-success'; 
+      return 'success'; 
     } 
     else if ($progress >= 0.5) { 
-      return 'alert-primary'; 
+      return 'primary'; 
     } 
     else if ($progress >= 0.25) { 
-      return 'alert-warning'; 
+      return 'warning'; 
     }
     else { 
-      return 'alert-secondary'; 
+      return 'secondary'; 
     } 
   }
 }

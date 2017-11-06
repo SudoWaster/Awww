@@ -50,6 +50,24 @@ var norefreshConfirmAction = function($elem, event) {
   }
 }
 
+var norefreshConfirmReloadAction = function($elem, event) {
+  event.preventDefault();
+  
+  var canDo = confirm($elem.data('msg'));
+  
+  if(canDo) {
+    var page = $elem.data('ref').split('?');
+    var address = 'awww_includes/content/pages/' + page[0] + '.php?' + page[1];
+    
+    isLoading = true;
+    
+    $.get(address, function(data) {
+      isLoading = false;
+      location.reload();
+    } );
+  }
+}
+
 var scrollTo = function($elem, event) {
   event.preventDefault();
   
@@ -63,6 +81,9 @@ var scrollTo = function($elem, event) {
 var linkBind = function() {
   $('.no-refresh').click(function(e) { norefreshAction($(this), e) } );
   $('.no-refresh-confirm').click(function(e) { norefreshConfirmAction($(this), e) } );
+  
+  $('.no-refresh-confirm-reload').click(function(e) { norefreshConfirmReloadAction($(this), e) } );
+  
   
   $('.scroll-to').click(function(e) { scrollTo($(this), e) } );
 }

@@ -24,7 +24,7 @@ foreach ($groups as $group) {
     
     <?php if(!$user->isPrivileged()) { ?>
     <div class="user-progress">
-      <div class="alert <?php echo UserData::getAlertClass($progress); ?>">
+      <div class="alert alert-<?php echo UserData::getAlertClass($progress); ?>">
         <?php echo round(100 * $progress); ?>%
       </div>
     </div>
@@ -37,7 +37,7 @@ foreach ($groups as $group) {
       
       
         <?php if(!$user->isPrivileged()) { ?>
-        <span class="badge <?php echo UserData::getBadgeClass($presence); ?>"><?php echo round(100 * $presence); ?>%</span>
+        <span class="badge badge<?php echo UserData::getBadgeClass($presence); ?>"><?php echo round(100 * $presence); ?>%</span>
         <?php } ?>
       </a>
     </div>
