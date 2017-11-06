@@ -7,6 +7,7 @@ $(document).ready(function() {
     var imail   = $form.find('#inputEmail').val(), 
         imail2  = $form.find('#inputEmail2').val(),
         iname   = $form.find('#inputName').val(),
+        ilname  = $form.find('#inputLastName').val(),
         ipass   = $form.find('#inputPassword').val();
     
     $form.find('#signin-button').prop('disabled', true);
@@ -32,7 +33,7 @@ $(document).ready(function() {
     $form.find('#inputEmail2').removeClass('is-invalid');
     
     var posting = $.post('awww_includes/register_do.php', 
-                         { mail: imail, mail2: imail, pass: ipass, name: iname });
+                         { mail: imail, mail2: imail, pass: ipass, name: iname, lastname: ilname });
     
     posting.done(function(data) {
       if (data != "ok") {

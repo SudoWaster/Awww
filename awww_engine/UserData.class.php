@@ -159,7 +159,7 @@ final class UserData {
    *
    * @return false on error
    */
-  public function createUser($mail, $password, $name, , $lastname, $type) {
+  public function createUser($mail, $password, $name, $lastname, $type) {
     
     if($this->getUser($mail)->canLogin()) {
       return false;
