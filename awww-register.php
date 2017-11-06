@@ -50,8 +50,11 @@ if(Session::isLogged()) {
         </div>
         
         <div class="form-group">
-         <label for="inputName" class="sr-only">Imię i nazwisko</label>
-          <input type="text" id="inputName" class="form-control" placeholder="Imię i nazwisko" required autofocus>
+          <label for="inputName" class="sr-only">Imię</label>
+          <input type="text" id="inputName" class="form-control" placeholder="Imię" required autofocus>
+          
+          <label for="inputLastName" class="sr-only">Nazwisko</label>
+          <input type="text" id="inputLastName" class="form-control" placeholder="Nazwisko" required autofocus>
 
           <label for="inputPassword" class="sr-only">Hasło</label>
           <input type="password" id="inputPassword" class="form-control" placeholder="Hasło" required> 

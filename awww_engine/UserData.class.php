@@ -159,17 +159,18 @@ final class UserData {
    *
    * @return false on error
    */
-  public function createUser($mail, $password, $name, $type) {
+  public function createUser($mail, $password, $name, , $lastname, $type) {
     
     if($this->getUser($mail)->canLogin()) {
       return false;
     }
     
-    $createUserQuery = self::$connection->prepare('INSERT INTO ' . self::$prefix . 'users (mail, password, name, wtype) VALUES(:mail, :pass, :name, :type)');
+    $createUserQuery = self::$connection->prepare('INSERT INTO ' . self::$prefix . 'users (mail, password, name, lastname, wtype) VALUES(:mail, :pass, :name, :ln, :type)');
     
     $createUserQuery->bindParam(':mail', $mail, PDO::PARAM_STR, 64);
     $createUserQuery->bindParam(':pass', self::saltHash($password, $mail), PDO::PARAM_STR, 64);
     $createUserQuery->bindParam(':name', $name, PDO::PARAM_STR, 64);
+    $createUserQuery->bindParam(':ln', $lastname, PDO::PARAM_STR, 64);
     $createUserQuery->bindParam(':type', $type, PDO::PARAM_INT);
     
     $createUserQuery->execute();
@@ -182,11 +183,12 @@ final class UserData {
    * Update user info
    *
    */
-  public function updateUser($id, $mail, $password, $name) {
-    $updateQuery = self::$connection->prepare('UPDATE ' . self::$prefix . 'users SET mail = :mail, password = :pass, name = :name WHERE user_id = :id');
+  public function updateUser($id, $mail, $password, $name, $lastname) {
+    $updateQuery = self::$connection->prepare('UPDATE ' . self::$prefix . 'users SET mail = :mail, password = :pass, name = :name, lastname = :ln WHERE user_id = :id');
     $updateQuery->bindParam(':mail', $mail, PDO::PARAM_STR, 64);
     $updateQuery->bindParam(':pass', self::saltHash($password, $mail), PDO::PARAM_STR, 64);
     $updateQuery->bindParam(':name', $name, PDO::PARAM_STR, 64);
+    $updateQuery->bindParam(':ln', $lastname, PDO::PARAM_STR, 64);
     $updateQuery->bindParam(':id', $id, PDO::PARAM_INT);
     
     $updateQuery->execute();

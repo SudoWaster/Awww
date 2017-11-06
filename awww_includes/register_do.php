@@ -18,6 +18,7 @@ if(Session::isLogged()) {
 
 $mail2   = $_POST['mail2'];
 $name    = $_POST['name'];
+$lname   = $_POST['lastname'];
 $plain   = $_POST['pass'];
 
 if (!($mail == $mail2)) {
@@ -35,7 +36,7 @@ if (strlen($plain) < 8) {
   return;
 }
 
-$userdata->createUser($mail, $plain, $name, User::$USER_TYPES['STUDENT']);
+$userdata->createUser($mail, $plain, $name, $lname, User::$USER_TYPES['STUDENT']);
 
 echo "ok";
 ?>
