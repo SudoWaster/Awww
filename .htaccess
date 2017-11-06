@@ -1,4 +1,7 @@
 Options +FollowSymLinks
+Options -Indexes
+
+DirectoryIndex awww-panel.php
 
 RewriteEngine On
 RewriteRule ^alogin(.*) awww-login.php$1 [L]

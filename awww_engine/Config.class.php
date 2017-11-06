@@ -1,6 +1,6 @@
 <?php
 final class Config {
-  private static $configFile = __DIR__ . '/awwwconfig.ini';
+  private static $configFile;
   
   private $config;
   
@@ -25,6 +25,8 @@ final class Config {
    *
    */
   private function __construct() {
+    self::$configFile = __DIR__ . '/awwwconfig.ini';
+    
     $this->config = parse_ini_file(self::$configFile, true);
   }
   

@@ -3,7 +3,7 @@ require_once __DIR__ . '/User.class.php';
 
 final class Session {
   
-  public static $sessionExpiration  = 10 * 60;   // 10 minutes expiration
+  public static $sessionExpiration  = 600;   // 10 minutes expiration
   public static $sessionCookie      = 'usid';
   
   private static $user;
