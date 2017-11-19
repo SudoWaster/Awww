@@ -1,4 +1,20 @@
 /*
+ * PRESENCE
+ *
+ */
+var setCheckboxPresence = function($elem) {
+  var groupID = $elem.data('group');
+  var userID  = $elem.data('user');
+  var date    = $elem.data('date');
+  var checked = $elem.is(':checked') ? 1 : 0;
+  
+  $.post ( 'awww_includes/content/pages/setpresence.php', 
+          { gid: groupID, day: date, uid: userID, present: checked},
+         function(data) { console.log(data); });
+}
+
+
+/*
  * ACHIEVEMENTS
  *
  */
@@ -27,6 +43,16 @@ var saveAchievementAction = function(e) {
   
   return false;
 };
+
+var setCheckboxAchievement = function($elem) {
+  var aID = $elem.data('achiev');
+  var userID  = $elem.data('user');
+  var checked = $elem.is(':checked') ? 1 : 0;
+  
+  $.post ( 'awww_includes/content/pages/setachievement.php', 
+          { aid: aID, uid: userID, assigned: checked },
+         function(data) { console.log(data); });
+}
 
 /*
  * POSTS
@@ -140,4 +166,7 @@ $(document).ready(function() {
   $('#group-edit-form').submit(function(e) { saveGroupAction(e); return false; });
   $('#group-add-form').submit(function(e) { addGroupAction(e); return false; });
   $('#achievement-add-form').submit(function(e) { saveAchievementAction(e); return false; });
+  
+  $('.presence-check').change(function(e) { setCheckboxPresence($(this)); });
+  $('.achievement-check').change(function(e) { setCheckboxAchievement($(this)); });
 });

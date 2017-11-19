@@ -74,6 +74,10 @@ $groups = $userdata->getUserGroups($userID);
               </li>
               
               <li class="nav-item">
+                <a class="nav-link no-refresh" data-ref="manageusers" href="#!allgroups">Wszystkie grupy</a>
+              </li>
+              
+              <li class="nav-item">
                 <a class="nav-link no-refresh" data-ref="manageusers" href="#!manageusers">Użytkownicy</a>
               </li>
               

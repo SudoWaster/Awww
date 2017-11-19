@@ -5,10 +5,16 @@ require_once __DIR__ . '/../../session.php';
 
 $userdata = UserData::Instance();
 
-$id            = $_GET['uid'];
-$group_id      = $_GET['gid'];
+$achiev_id     = $_POST['aid'];
+$user_id       = $_POST['uid'];
+$assigned      = $_POST['assigned'];
 
 if ((Session::getUser()->isPrivileged() && $userdata->isInGroup(Session::getUser()->getID(), $group_id)) || Session::getUser()->isAdmin()) {
-  $userdata->removeFromGroup($id, $group_id, false);
+  if($assigned) {
+    $userdata->assignAchievement($achiev_id, $user_id);  
+  } else {
+    $userdata->rejectAchievement($achiev_id, $user_id); 
+  }
+  
 }
 ?>

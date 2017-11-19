@@ -8,6 +8,8 @@ require_once __DIR__ . '/User.class.php';
  */
 final class UserData {
   
+  private static $passwordLength  = 8;
+  
   private static $hashSaltPhrase  = 'AwW54l7';  // DO NOT CHANGE UNLESS YOU WANT TO
   private static $hashSaltMod     = 7;          // RESET PASSWORDS FOR EVERYONE
   
@@ -161,7 +163,7 @@ final class UserData {
    */
   public function createUser($mail, $password, $name, $lastname, $type) {
     
-    if($this->getUser($mail)->canLogin()) {
+    if($this->getUser($mail)->canLogin() || strlen($password) < self::$passwordLength) {
       return false;
     }
     
@@ -329,9 +331,10 @@ final class UserData {
     }
     
     $user = $this->getUser($mail);
+    $uid  = $user->getID();
     
     $checkQuery = self::$connection->prepare('SELECT * FROM ' . self::$prefix . 'group_assign WHERE user_id=:uid AND group_id=:gid');
-    $checkQuery->bindParam(':uid', $user->getID(), PDO::PARAM_INT);
+    $checkQuery->bindParam(':uid', $uid, PDO::PARAM_INT);
     $checkQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
     $checkQuery->execute();
     
@@ -340,7 +343,7 @@ final class UserData {
     }
     
     $insertQuery = self::$connection->prepare('INSERT INTO ' . self::$prefix . 'group_assign (user_id, group_id) VALUES(:uid, :gid)');
-    $insertQuery->bindParam(':uid', $user->getID(), PDO::PARAM_INT);
+    $insertQuery->bindParam(':uid', $uid, PDO::PARAM_INT);
     $insertQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
     $insertQuery->execute();
     
@@ -573,6 +576,30 @@ final class UserData {
   
   
   /**
+   * Assign achievement to user
+   *
+   */
+  public function assignAchievement($id, $uid) {
+    $insertQuery = self::$connection->prepare('INSERT INTO ' . self::$prefix . 'user_badges (user_id, achievement_id) VALUES(:uid, :id)');
+    $insertQuery->bindParam(':uid', $uid, PDO::PARAM_INT);
+    $insertQuery->bindParam(':id', $id, PDO::PARAM_INT);
+    $insertQuery->execute();
+  }
+  
+  
+  /**
+   * Reject achievement from user
+   *
+   */
+  public function rejectAchievement($id, $uid) {
+    $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'user_badges WHERE achievement_id = :id AND user_id = :uid');
+    $removeQuery->bindParam(':id', $id, PDO::PARAM_INT);
+    $insertQuery->bindParam(':uid', $uid, PDO::PARAM_INT);
+    $removeQuery->execute();
+  }
+  
+  
+  /**
    * @return an array of group achievements
    */
   public function getGroupAchievements($group_id) {
@@ -765,9 +792,8 @@ final class UserData {
    * @return presence of a particular user
    */
   public function getUserPresence($userID, $groupID) {
-    $selectQuery = self::$connection->prepare('SELECT COUNT(presence) as cnt FROM ' . self::$prefix . 'presence WHERE group_id = :gid AND user_id = :uid');
+    $selectQuery = self::$connection->prepare('SELECT COUNT(result.date) as cnt FROM (SELECT * FROM ' . self::$prefix . 'presence WHERE group_id = :gid GROUP BY date) AS result');
     $selectQuery->bindParam(':gid', $groupID, PDO::PARAM_INT);
-    $selectQuery->bindParam(':uid', $userID, PDO::PARAM_INT);
     $selectQuery->execute();
     
     $alldays = $selectQuery->fetch()['cnt'];

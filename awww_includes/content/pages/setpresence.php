@@ -10,7 +10,7 @@ $date          = $_POST['day'];
 $user_id       = $_POST['uid'];
 $present       = $_POST['present'];
 
-if (Session::getUser()->isPrivileged() && $userdata->isInGroup(Session::getUser()->getID(), $group_id) || Session::getUser()->isAdmin()) {
+if ((Session::getUser()->isPrivileged() && $userdata->isInGroup(Session::getUser()->getID(), $group_id)) || Session::getUser()->isAdmin()) {
   $userdata->setPresence($user_id, $group_id, $date, $present);
 }
 ?>
