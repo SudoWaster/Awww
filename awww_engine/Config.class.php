@@ -1,5 +1,6 @@
 <?php
 final class Config {
+  
   private static $configFile;
   
   private $config;
@@ -37,5 +38,14 @@ final class Config {
    */
   public function get() {
     return $this->config;
+  }
+  
+  
+  /**
+   * @return system version
+   *
+   */
+  public static function getVersion() {
+    return "1.2";
   }
 }

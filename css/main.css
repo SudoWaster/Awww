@@ -62,6 +62,15 @@ input {
   padding: 0 1rem;
 }
 
+.sidebar .footer {
+  margin-top: 2rem;
+  font-size: 0.6em;
+  color: #999;
+}
+
+.sidebar .footer .nav-item {
+  padding: 0 1rem;
+}
 
 
 @media (max-width: 575px) {

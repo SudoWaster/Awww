@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../awww_engine/UserData.class.php';
 require_once __DIR__ . '/../../awww_engine/Session.class.php';
+require_once __DIR__ . '/../../awww_engine/Config.class.php';
 
 Session::startSession();
 $userdata = UserData::Instance();
@@ -87,4 +88,11 @@ $groups = $userdata->getUserGroups($userID);
             </ul>
             
             <?php } ?>
+            
+            <ul class="nav nav-pills flex-column footer">
+            
+              <li class="nav-item">
+                AWWW version <?php echo Config::getVersion(); ?>
+              </li>
+            </ul>
           </nav>

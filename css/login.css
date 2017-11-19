@@ -74,8 +74,8 @@ body {
 
 .awww-version {
   margin-top: 24px;
-  font-size: 10px;
-  opacity: 0.5;
+  font-size: 0.6em;
+  color: #999;
 }
 
 @media screen and (max-width: 512px) {

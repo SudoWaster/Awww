@@ -47,7 +47,7 @@ if(Session::isLogged()) {
         <input type="password" id="inputPassword" class="form-control" placeholder="Hasło" required>
         <button class="btn btn-lg btn-outline-dark btn-block" type="submit" id="signin-button">Zaloguj</button>
       
-        <span class="awww-version">AWWW v. <?php echo parse_ini_file('awww_engine/awwwconfig.ini', true)['VERSION']; ?></span>
+        <span class="awww-version">AWWW v. <?php echo Config::getVersion(); ?> ?></span>
       </form>
 
     </div> <!-- /container -->
