@@ -28,7 +28,7 @@ $members      = $userdata->getAllFromGroup($groupID);
 if (!((Session::getUser()->isPrivileged() && $userdata->isInGroup($userID, $groupID)) || Session::getUser()->isAdmin())) {
 ?>
 
-  <h2 class="ginfo">Dodawanie zakończone błędem</h2>
+  <h2 class="ginfo">Brak uprawnień</h2>
   <a role="button" class="btn btn-outline-primary" href="apanel">Powrót</a>
 
 <?php
