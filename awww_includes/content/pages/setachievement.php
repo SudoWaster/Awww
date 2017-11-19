@@ -9,7 +9,7 @@ $achiev_id     = $_POST['aid'];
 $user_id       = $_POST['uid'];
 $assigned      = $_POST['assigned'];
 
-if ((Session::getUser()->isPrivileged() && $userdata->isInGroup(Session::getUser()->getID(), $group_id)) || Session::getUser()->isAdmin()) {
+if (Session::getUser()->isPrivileged() || Session::getUser()->isAdmin()) {
   if($assigned) {
     $userdata->assignAchievement($achiev_id, $user_id);  
   } else {

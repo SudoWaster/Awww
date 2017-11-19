@@ -594,7 +594,7 @@ final class UserData {
   public function rejectAchievement($id, $uid) {
     $removeQuery = self::$connection->prepare('DELETE FROM ' . self::$prefix . 'user_badges WHERE achievement_id = :id AND user_id = :uid');
     $removeQuery->bindParam(':id', $id, PDO::PARAM_INT);
-    $insertQuery->bindParam(':uid', $uid, PDO::PARAM_INT);
+    $removeQuery->bindParam(':uid', $uid, PDO::PARAM_INT);
     $removeQuery->execute();
   }
   
